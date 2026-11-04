@@ -413,8 +413,16 @@ test.describe("Scenario's", () => {
     await expect(ali.locator('.deel button.kopieer')).toHaveText('Gekopieerd');
     await expect(ali.locator('.deel button.delen')).toContainText('Deel');
     await expect(ali.locator('.deel button.delen svg')).toHaveCount(1);
-    await expect(ali.locator('#nieuw')).toBeVisible();
-    await expect(ali.locator('#nieuw')).toHaveText('+ Nieuwe afspraak');
+    // "Nieuwe afspraak", titel aanpassen en verwijderen zitten in het hoekmenu
+    await expect(ali.locator('#nieuw')).toBeHidden();
+    await ali.locator('#deelApp').click();
+    await expect(ali.locator('#deelAppMenu .menuitem')).toHaveText(['Deel deze afspraak', 'Kopieer', 'Deel Whenly', 'titel aanpassen', '+Nieuwe afspraak', '×Afspraak volledig verwijderen'].map((x) => new RegExp(x.replace(/[+×]/g, '.?') + '$')));
+    await ali.keyboard.press('Escape');
+    await expect(ali.locator('#deelAppMenu')).toBeHidden();
+    await expect(ali.locator('.titelacties > button.sec')).toBeHidden();
+    // vlak na het maken: de deelbalk, met een kruisje om hem weg te doen
+    await ali.locator('.deel .dicht').click();
+    await expect(ali.locator('.deel')).toBeHidden();
     await expect(ali.locator('h1')).toHaveText('Etentje');
     await expect(ali.locator('#voet')).toContainText('vdev'); // versie-label (dev in de testomgeving)
     // balk boven de kalender: voor wie klik je (jezelf, in je eigen kleur)
@@ -445,7 +453,7 @@ test.describe("Scenario's", () => {
     const sofieCtx = await browser.newContext(ctxOpties(testInfo));
     const sofie = await sofieCtx.newPage();
     await sofie.goto(pollUrl);
-    await expect(sofie.locator('.deel')).toContainText('Deel deze link:'); // altijd zichtbaar, nooit kwijt
+    await expect(sofie.locator('.deel')).toBeHidden(); // delen zit in de knop rechts in de hoek
     await expect(sofie.locator('#joinnaam')).toBeVisible();
     await expect(sofie.locator('.kal')).toHaveClass(/inactief/);
     // stap 1 "Wie ben jij?" staat omkaderd; de kalender (stap 2) is nog op slot
@@ -526,7 +534,8 @@ test.describe("Scenario's", () => {
     await expect(dag(sofie, D3)).not.toHaveClass(/optie/);
 
     /* ---------- S6: titel aanpassen (iedereen mag) ---------- */
-    await ali.locator('button', { hasText: 'titel aanpassen' }).click();
+    await ali.locator('#deelApp').click();
+    await ali.locator('#deelAppMenu button', { hasText: 'titel aanpassen' }).click();
     await ali.locator('.titeleditor input').fill('Etentje bij Ali');
     await ali.locator('.titeleditor button').click();
     await expect(ali.locator('h1')).toHaveText('Etentje bij Ali');
@@ -772,10 +781,20 @@ test.describe("Scenario's", () => {
     page = await ctx.newPage();
     await page.goto('/p/' + id);
     await expect(page.locator('h1')).toHaveText('Etentje');
+    // op een afspraak opent de knop altijd het menu
     await page.locator('#deelApp').click();
-    const d = await page.evaluate(() => window.__gedeeld);
+    await expect(page.locator('#deelApp')).toHaveAttribute('aria-label', 'Delen en meer');
+    await page.locator('#deelAppMenu button', { hasText: 'Deel Whenly' }).click();
+    let d = await page.evaluate(() => window.__gedeeld);
     expect(d.url).toBe(new URL(page.url()).origin + '/');
     expect(d.title).toBe('Whenly');
+    await expect(page.locator('#deelAppMenu')).toBeHidden();
+    // "Deel deze afspraak": de link van deze afspraak, met de titel
+    await page.locator('#deelApp').click();
+    await page.locator('#deelAppMenu button', { hasText: 'Deel deze afspraak' }).click();
+    d = await page.evaluate(() => window.__gedeeld);
+    expect(d.url).toBe(new URL(page.url()).origin + '/p/' + id);
+    expect(d.title).toBe('Etentje');
     await expect(page.locator('#deelAppMenu')).toBeHidden();
     // geen horizontaal scrollen met de extra knop
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true);
@@ -1076,8 +1095,9 @@ test.describe("Scenario's", () => {
     await expect(page.locator('h1')).toHaveText('Etentje');
     await page.goto('/p/' + b.id);
     await expect(page.locator('h1')).toHaveText('Weekend aan zee');
-    // knop "Nieuwe afspraak" naast "Deel" brengt je naar de start
-    const nieuw = page.locator('#nieuw');
+    // "Nieuwe afspraak" in het hoekmenu brengt je naar de start
+    await page.locator('#deelApp').click();
+    const nieuw = page.locator('#deelAppMenu a', { hasText: 'Nieuwe afspraak' });
     await expect(nieuw).toHaveAttribute('href', '/');
     await nieuw.click();
     await page.waitForURL(/\/$/);
@@ -1107,13 +1127,19 @@ test.describe("Scenario's", () => {
     const page = await ctx.newPage();
     await page.goto('/p/' + id);
     await expect(page.locator('h1')).toHaveText('Weg ermee');
-    const knop = page.locator('.weg.alles > button');
-    await expect(knop).toHaveText('Afspraak volledig verwijderen');
-    await knop.click();
+    // via het hoekmenu; de bevestiging verschijnt onder de titel
+    const kies = async () => {
+      await page.locator('#deelApp').click();
+      await page.locator('#deelAppMenu button', { hasText: 'Afspraak volledig verwijderen' }).click();
+      await expect(page.locator('.weg.alles .bevestig button.ja')).toBeVisible();
+    };
+    await kies();
+    await expect(page.locator('.weg.alles .bevestig button.ja')).toBeFocused();
     // eerst "toch niet": niets gebeurt
     await page.locator('.weg.alles .bevestig button', { hasText: 'Toch niet' }).click();
+    await expect(page.locator('.weg.alles .bevestig')).toBeHidden();
     expect((await request.get('/api/polls/' + id)).status()).toBe(200);
-    await knop.click();
+    await kies();
     await page.locator('.weg.alles .bevestig button.ja').click();
     await page.waitForURL(/\/$/);
     await expect(page.locator('#scherm [role="status"]')).toHaveText('De afspraak is verwijderd.');

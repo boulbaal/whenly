@@ -156,6 +156,16 @@
     font-size: 15px; font-weight: 500; text-decoration: none; text-align: start;
   }
   #deelAppMenu a:hover, #deelAppMenu button:hover { background: var(--lijn); }
+  #deelAppMenu hr { border: 0; border-top: 1px solid var(--lijn); margin: 6px 4px; }
+  #deelAppMenu .menuitem > span:not(.bol) { display: inline-block; }
+  #deelAppMenu .menuitem > span:not(.bol)::first-letter { text-transform: uppercase; }
+  #deelAppMenu .gevaar { color: var(--rood); }
+  #deelAppMenu .terug { color: var(--gedempt); }
+  /* afspraakpagina: titel aanpassen en verwijderen zitten in het hoekmenu */
+  .titelacties > button.sec, .weg.alles > button:not(.ja) { display: none !important; }
+  .weg.alles .bevestig button { display: inline-flex !important; }
+  .deel { position: relative; }
+  .deel .dicht { position: absolute; top: 2px; inset-inline-end: 2px; width: 44px; height: 44px; min-height: 44px; padding: 0; background: none; color: var(--gedempt); font-size: 22px; line-height: 1; }
   #deelAppMenu .bol { width: 22px; height: 22px; border-radius: 50%; display: inline-grid; place-items: center; color: #fff; font-size: 12px; font-weight: 700; flex: 0 0 auto; }
   /* smal scherm met ook "+ Nieuwe afspraak" in de kop: alleen het icoon */
   @media (max-width: 380px) { #nieuw:not(.verborgen) + #deelApp .lbl { display: none; } }
@@ -628,6 +638,10 @@ en: {
   'members.addBtn': 'Add',
   'members.actingFor': 'You are filling in for {name}.',
   'members.backToMe': 'back to me',
+  'menu.sharePoll': 'Share this poll',
+  'menu.shareApp': 'Share Whenly',
+  'menu.back': 'Back',
+  'menu.label': 'Share and more',
   'who.title': 'Who are you?',
   'who.new': 'Not on the list yet? Type your name:',
   'cal.locked': 'Choose who you are first',
@@ -725,6 +739,10 @@ nl: {
   'members.addBtn': 'Toevoegen',
   'members.actingFor': 'Je vult nu in voor {name}.',
   'members.backToMe': 'terug naar mezelf',
+  'menu.sharePoll': 'Deel deze afspraak',
+  'menu.shareApp': 'Deel Whenly',
+  'menu.back': 'Terug',
+  'menu.label': 'Delen en meer',
   'who.title': 'Wie ben jij?',
   'who.new': 'Sta je er nog niet bij? Typ je naam:',
   'cal.locked': 'Kies eerst wie je bent',
@@ -822,6 +840,10 @@ fr: {
   'members.addBtn': 'Ajouter',
   'members.actingFor': 'Tu remplis pour {name}.',
   'members.backToMe': 'revenir à moi',
+  'menu.sharePoll': 'Partager ce rendez-vous',
+  'menu.shareApp': 'Partager Whenly',
+  'menu.back': 'Retour',
+  'menu.label': 'Partager et plus',
   'who.title': 'Qui es-tu ?',
   'who.new': 'Pas encore dans la liste ? Tape ton prénom :',
   'cal.locked': 'Choisis d\'abord qui tu es',
@@ -919,6 +941,10 @@ de: {
   'members.addBtn': 'Hinzufügen',
   'members.actingFor': 'Du trägst gerade für {name} ein.',
   'members.backToMe': 'zurück zu mir',
+  'menu.sharePoll': 'Diese Umfrage teilen',
+  'menu.shareApp': 'Whenly teilen',
+  'menu.back': 'Zurück',
+  'menu.label': 'Teilen und mehr',
   'who.title': 'Wer bist du?',
   'who.new': 'Noch nicht auf der Liste? Gib deinen Namen ein:',
   'cal.locked': 'Wähle zuerst, wer du bist',
@@ -1016,6 +1042,10 @@ es: {
   'members.addBtn': 'Añadir',
   'members.actingFor': 'Estás rellenando por {name}.',
   'members.backToMe': 'volver a mí',
+  'menu.sharePoll': 'Compartir esta encuesta',
+  'menu.shareApp': 'Compartir Whenly',
+  'menu.back': 'Volver',
+  'menu.label': 'Compartir y más',
   'who.title': '¿Quién eres?',
   'who.new': '¿Aún no estás en la lista? Escribe tu nombre:',
   'cal.locked': 'Elige primero quién eres',
@@ -1113,6 +1143,10 @@ pt: {
   'members.addBtn': 'Adicionar',
   'members.actingFor': 'Estás a preencher por {name}.',
   'members.backToMe': 'voltar a mim',
+  'menu.sharePoll': 'Partilhar esta votação',
+  'menu.shareApp': 'Partilhar o Whenly',
+  'menu.back': 'Voltar',
+  'menu.label': 'Partilhar e mais',
   'who.title': 'Quem és tu?',
   'who.new': 'Ainda não estás na lista? Escreve o teu nome:',
   'cal.locked': 'Escolhe primeiro quem és',
@@ -1210,6 +1244,10 @@ pl: {
   'members.addBtn': 'Dodaj',
   'members.actingFor': 'Wypełniasz za {name}.',
   'members.backToMe': 'wróć do siebie',
+  'menu.sharePoll': 'Udostępnij tę ankietę',
+  'menu.shareApp': 'Udostępnij Whenly',
+  'menu.back': 'Wstecz',
+  'menu.label': 'Udostępnij i więcej',
   'who.title': 'Kim jesteś?',
   'who.new': 'Nie ma cię jeszcze na liście? Wpisz swoje imię:',
   'cal.locked': 'Najpierw wybierz, kim jesteś',
@@ -1307,6 +1345,10 @@ uk: {
   'members.addBtn': 'Додати',
   'members.actingFor': 'Ви заповнюєте за {name}.',
   'members.backToMe': 'назад до себе',
+  'menu.sharePoll': 'Поділитися цим опитуванням',
+  'menu.shareApp': 'Поділитися Whenly',
+  'menu.back': 'Назад',
+  'menu.label': 'Поділитися та інше',
   'who.title': 'Хто ви?',
   'who.new': 'Вас ще немає у списку? Введіть своє ім’я:',
   'cal.locked': 'Спочатку оберіть, хто ви',
@@ -1404,6 +1446,10 @@ ru: {
   'members.addBtn': 'Добавить',
   'members.actingFor': 'Вы заполняете за {name}.',
   'members.backToMe': 'назад к себе',
+  'menu.sharePoll': 'Поделиться этим опросом',
+  'menu.shareApp': 'Поделиться Whenly',
+  'menu.back': 'Назад',
+  'menu.label': 'Поделиться и другое',
   'who.title': 'Кто вы?',
   'who.new': 'Вас ещё нет в списке? Введите своё имя:',
   'cal.locked': 'Сначала выберите, кто вы',
@@ -1501,6 +1547,10 @@ tr: {
   'members.addBtn': 'Ekle',
   'members.actingFor': '{name} için dolduruyorsun.',
   'members.backToMe': 'kendime dön',
+  'menu.sharePoll': 'Bu anketi paylaş',
+  'menu.shareApp': 'Whenly\'yi paylaş',
+  'menu.back': 'Geri',
+  'menu.label': 'Paylaş ve daha fazlası',
   'who.title': 'Sen kimsin?',
   'who.new': 'Henüz listede yok musun? Adını yaz:',
   'cal.locked': 'Önce kim olduğunu seç',
@@ -1598,6 +1648,10 @@ ar: {
   'members.addBtn': 'إضافة',
   'members.actingFor': 'أنت تملأ نيابة عن {name}.',
   'members.backToMe': 'العودة إليّ',
+  'menu.sharePoll': 'مشاركة هذا الاستطلاع',
+  'menu.shareApp': 'مشاركة Whenly',
+  'menu.back': 'رجوع',
+  'menu.label': 'المشاركة والمزيد',
   'who.title': 'من أنت؟',
   'who.new': 'لست في القائمة بعد؟ اكتب اسمك:',
   'cal.locked': 'اختر أولاً من أنت',
@@ -1695,6 +1749,10 @@ ur: {
   'members.addBtn': 'شامل کریں',
   'members.actingFor': 'آپ {name} کے لیے بھر رہے ہیں۔',
   'members.backToMe': 'واپس اپنے آپ پر',
+  'menu.sharePoll': 'یہ پول شیئر کریں',
+  'menu.shareApp': 'Whenly شیئر کریں',
+  'menu.back': 'واپس',
+  'menu.label': 'شیئر اور مزید',
   'who.title': 'آپ کون ہیں؟',
   'who.new': 'ابھی فہرست میں نہیں ہیں؟ اپنا نام لکھیں:',
   'cal.locked': 'پہلے چنیں کہ آپ کون ہیں',
@@ -1792,6 +1850,10 @@ hi: {
   'members.addBtn': 'जोड़ें',
   'members.actingFor': 'आप {name} के लिए भर रहे हैं।',
   'members.backToMe': 'वापस अपने पर',
+  'menu.sharePoll': 'यह पोल शेयर करें',
+  'menu.shareApp': 'Whenly शेयर करें',
+  'menu.back': 'वापस',
+  'menu.label': 'शेयर और अधिक',
   'who.title': 'आप कौन हैं?',
   'who.new': 'अभी सूची में नहीं हैं? अपना नाम लिखें:',
   'cal.locked': 'पहले चुनें कि आप कौन हैं',
@@ -1889,6 +1951,10 @@ bn: {
   'members.addBtn': 'যোগ করুন',
   'members.actingFor': 'আপনি {name}-এর হয়ে পূরণ করছেন।',
   'members.backToMe': 'নিজের কাছে ফিরুন',
+  'menu.sharePoll': 'এই পোল শেয়ার করুন',
+  'menu.shareApp': 'Whenly শেয়ার করুন',
+  'menu.back': 'ফিরে যান',
+  'menu.label': 'শেয়ার ও আরও',
   'who.title': 'আপনি কে?',
   'who.new': 'এখনও তালিকায় নেই? আপনার নাম লিখুন:',
   'cal.locked': 'আগে বেছে নিন আপনি কে',
@@ -1986,6 +2052,10 @@ id: {
   'members.addBtn': 'Tambah',
   'members.actingFor': 'Kamu mengisi untuk {name}.',
   'members.backToMe': 'kembali ke saya',
+  'menu.sharePoll': 'Bagikan polling ini',
+  'menu.shareApp': 'Bagikan Whenly',
+  'menu.back': 'Kembali',
+  'menu.label': 'Bagikan dan lainnya',
   'who.title': 'Kamu siapa?',
   'who.new': 'Belum ada di daftar? Ketik nama kamu:',
   'cal.locked': 'Pilih dulu siapa kamu',
@@ -2083,6 +2153,10 @@ vi: {
   'members.addBtn': 'Thêm',
   'members.actingFor': 'Bạn đang điền giúp {name}.',
   'members.backToMe': 'quay lại tôi',
+  'menu.sharePoll': 'Chia sẻ bình chọn này',
+  'menu.shareApp': 'Chia sẻ Whenly',
+  'menu.back': 'Quay lại',
+  'menu.label': 'Chia sẻ và thêm',
   'who.title': 'Bạn là ai?',
   'who.new': 'Chưa có tên trong danh sách? Nhập tên bạn:',
   'cal.locked': 'Hãy chọn bạn là ai trước',
@@ -2180,6 +2254,10 @@ zh: {
   'members.addBtn': '添加',
   'members.actingFor': '你正在替 {name} 填写。',
   'members.backToMe': '回到自己',
+  'menu.sharePoll': '分享这个投票',
+  'menu.shareApp': '分享 Whenly',
+  'menu.back': '返回',
+  'menu.label': '分享及更多',
   'who.title': '你是谁？',
   'who.new': '名单上还没有你？输入你的名字：',
   'cal.locked': '请先选择你是谁',
@@ -2277,6 +2355,10 @@ ja: {
   'members.addBtn': '追加',
   'members.actingFor': '{name} の代わりに入力中です。',
   'members.backToMe': '自分に戻る',
+  'menu.sharePoll': 'この日程調整を共有',
+  'menu.shareApp': 'Whenlyを共有',
+  'menu.back': '戻る',
+  'menu.label': '共有・その他',
   'who.title': 'あなたは誰ですか？',
   'who.new': 'まだリストにいませんか？名前を入力：',
   'cal.locked': 'まず自分が誰かを選んでください',
@@ -2374,6 +2456,10 @@ ko: {
   'members.addBtn': '추가',
   'members.actingFor': '{name} 대신 입력 중이에요.',
   'members.backToMe': '나로 돌아가기',
+  'menu.sharePoll': '이 투표 공유',
+  'menu.shareApp': 'Whenly 공유',
+  'menu.back': '뒤로',
+  'menu.label': '공유 및 더보기',
   'who.title': '누구인가요?',
   'who.new': '아직 목록에 없나요? 이름을 입력하세요:',
   'cal.locked': '먼저 누구인지 선택하세요',
@@ -2471,6 +2557,10 @@ sw: {
   'members.addBtn': 'Ongeza',
   'members.actingFor': 'Unajaza kwa niaba ya {name}.',
   'members.backToMe': 'rudi kwangu',
+  'menu.sharePoll': 'Shiriki kura hii',
+  'menu.shareApp': 'Shiriki Whenly',
+  'menu.back': 'Rudi',
+  'menu.label': 'Shiriki na zaidi',
   'who.title': 'Wewe ni nani?',
   'who.new': 'Bado huko kwenye orodha? Andika jina lako:',
   'cal.locked': 'Chagua kwanza wewe ni nani',
@@ -2568,6 +2658,10 @@ zgh: {
   'members.addBtn': 'ⵔⵏⵓ',
   'members.actingFor': 'ⴰⵔ ⵜⵙⵎⴷⵉⴷ ⵉ {name}.',
   'members.backToMe': 'ⴰⵖⵓⵍ ⵖⵓⵔⵉ',
+  'menu.sharePoll': 'ⴱⴹⵓ ⴰⵎⵙⴰⴳⴰⵔ ⴰⴷ',
+  'menu.shareApp': 'ⴱⴹⵓ Whenly',
+  'menu.back': 'ⴰⵖⵓⵍ',
+  'menu.label': 'ⴱⴹⵓ ⴷ ⵓⴳⴳⴰⵔ',
   'who.title': 'ⵎⴰⵏⵡⴰ ⴽⵢⵢⵉ?',
   'who.new': 'ⵓⵔ ⵜⴰ ⵜⵍⵍⵉⴷ ⴳ ⵜⵍⴳⴰⵎⵜ? ⴰⵔⴰ ⵉⵙⵎ ⵏⵏⴽ:',
   'cal.locked': 'ⵙⵜⵉ ⵜⴰⵣⵡⴰⵔⴰ ⵎⴰⵏⵡⴰ ⴽⵢⵢⵉ',
@@ -2665,6 +2759,10 @@ ku: {
   'members.addBtn': 'Zêde bike',
   'members.actingFor': 'Tu ji bo {name} dagirî.',
   'members.backToMe': 'vegere ser min',
+  'menu.sharePoll': 'Vê anketê parve bike',
+  'menu.shareApp': 'Whenly parve bike',
+  'menu.back': 'Vegere',
+  'menu.label': 'Parve bike û bêtir',
   'who.title': 'Tu kî yî?',
   'who.new': 'Hê ne di lîsteyê de yî? Navê xwe binivîse:',
   'cal.locked': 'Pêşî hilbijêre tu kî yî',
@@ -2762,6 +2860,10 @@ sn: {
   'members.addBtn': 'Wedzera',
   'members.actingFor': 'Uri kuzadzira {name}.',
   'members.backToMe': 'dzokera kwandiri',
+  'menu.sharePoll': 'Govera poll iyi',
+  'menu.shareApp': 'Govera Whenly',
+  'menu.back': 'Dzokera',
+  'menu.label': 'Govera nezvimwe',
   'who.title': 'Ndiwe ani?',
   'who.new': 'Hausati uri pane rondedzero? Nyora zita rako:',
   'cal.locked': 'Tanga wasarudza kuti ndiwe ani',
@@ -3136,15 +3238,18 @@ let doneerHertaal = () => {};
   doneerHertaal = vul;
 })();
 
-/* ---------- Whenly zelf delen (knop bovenaan) ---------- */
-// Op een telefoon: het eigen deelmenu van het toestel (WhatsApp, mail, Messenger ...).
-// Waar dat niet bestaat (computer): een klein menu met WhatsApp, e-mail, Facebook,
-// Telegram en link kopiëren. Deelt altijd de startpagina, niet een afspraak.
+/* ---------- de knop rechts in de hoek: delen (en op een afspraak: meer) ---------- */
+// Startpagina: Whenly delen. Telefoon = eigen deelmenu van het toestel; anders een
+// klein menu (WhatsApp, e-mail, Facebook, Telegram, kopiëren).
+// Afspraakpagina: altijd een menu met deze afspraak delen, de link kopiëren,
+// Whenly delen, en daaronder titel aanpassen, nieuwe afspraak en verwijderen.
 let deelAppHertaal = () => {};
+let hoekAfspraak = null;   // { url, titel(), bewerk(), verwijder() } op een afspraakpagina
+function zetHoekAfspraak(x) { hoekAfspraak = x; deelAppHertaal(); }
 (function deelApp() {
   const btn = document.getElementById('deelApp');
   const menu = document.getElementById('deelAppMenu');
-  const url = location.origin + '/';
+  const appUrl = location.origin + '/';
   const ns = 'http://www.w3.org/2000/svg';
   function icoon() {
     const svg = document.createElementNS(ns, 'svg');
@@ -3155,55 +3260,100 @@ let deelAppHertaal = () => {};
     svg.append(p);
     return svg;
   }
-  const tekst = () => t('make.title') + ' ' + t('make.tagline');
+  const appTekst = () => t('make.title') + ' ' + t('make.tagline');
+  const isOpen = () => !menu.classList.contains('verborgen');
   function sluit() { menu.classList.add('verborgen'); btn.setAttribute('aria-expanded', 'false'); }
+  function eersteFocus() { const e = menu.querySelector('a, button'); if (e) e.focus(); }
+  function bol(letter, kleur) {
+    const b = el('span', 'bol', letter); b.style.background = kleur; b.setAttribute('aria-hidden', 'true');
+    return b;
+  }
   function link(naam, kleur, letter, href) {
-    const a = el('a'); a.href = href; a.target = '_blank'; a.rel = 'noopener'; a.setAttribute('role', 'menuitem');
-    const bol = el('span', 'bol', letter); bol.style.background = kleur; bol.setAttribute('aria-hidden', 'true');
-    a.append(bol, document.createTextNode(naam));
+    const a = el('a', 'menuitem'); a.href = href; a.target = '_blank'; a.rel = 'noopener'; a.setAttribute('role', 'menuitem');
+    a.append(bol(letter, kleur), document.createTextNode(naam));
     a.addEventListener('click', sluit);
     return a;
   }
+  function knop(tekst, cls, actie, b) {
+    const k = el('button', 'menuitem' + (cls ? ' ' + cls : '')); k.type = 'button'; k.setAttribute('role', 'menuitem');
+    const lbl = el('span', null, tekst);
+    if (b) k.append(b);
+    k.append(lbl);
+    k.addEventListener('click', (e) => { e.stopPropagation(); actie(lbl); });
+    return k;
+  }
+  function kopieer(url) {
+    return knop(t('share.copy'), '', async (lbl) => {
+      try { await navigator.clipboard.writeText(url); lbl.textContent = t('share.copied'); setTimeout(sluit, 900); } catch { /* stil */ }
+    }, bol('⧉', '#009E73'));
+  }
+  // WhatsApp, e-mail, Facebook, Telegram en kopiëren voor één link
+  function deelLinks(url, tekst, onderwerp) {
+    const e = encodeURIComponent;
+    const msg = tekst + ' ' + url;
+    return [
+      link('WhatsApp', '#25D366', 'W', 'https://wa.me/?text=' + e(msg)),
+      link('E-mail', '#6B7580', '@', 'mailto:?subject=' + e(onderwerp) + '&body=' + e(msg)),
+      link('Facebook', '#1877F2', 'f', 'https://www.facebook.com/sharer/sharer.php?u=' + e(url)),
+      link('Telegram', '#229ED9', 'T', 'https://t.me/share/url?url=' + e(url) + '&text=' + e(tekst)),
+      kopieer(url),
+    ];
+  }
+  // delen: eigen deelmenu van het toestel, anders de lijst met links in het menu
+  async function deel(url, tekst, titel) {
+    if (navigator.share) {
+      try { await navigator.share({ title: titel, text: tekst, url }); sluit(); return; } catch (e) {
+        if (e && e.name === 'AbortError') { sluit(); return; }
+      }
+    }
+    menu.textContent = '';
+    if (hoekAfspraak) menu.append(knop('‹ ' + t('menu.back'), 'terug', () => { vulMenu(); eersteFocus(); }));
+    menu.append(...deelLinks(url, tekst, titel));
+    eersteFocus();
+  }
   function vulMenu() {
     menu.textContent = '';
-    const msg = tekst() + ' ' + url;
-    const e = encodeURIComponent;
+    if (!hoekAfspraak) {
+      menu.append(...deelLinks(appUrl, appTekst(), 'Whenly'));
+      return;
+    }
+    const a = hoekAfspraak;
+    const nieuw = el('a', 'menuitem'); nieuw.href = '/'; nieuw.setAttribute('role', 'menuitem');
+    nieuw.append(bol('+', 'var(--groen)'), document.createTextNode(t('notfound.new')));
     menu.append(
-      link('WhatsApp', '#25D366', 'W', 'https://wa.me/?text=' + e(msg)),
-      link('E-mail', '#6B7580', '@', 'mailto:?subject=' + e('Whenly') + '&body=' + e(msg)),
-      link('Facebook', '#1877F2', 'f', 'https://www.facebook.com/sharer/sharer.php?u=' + e(url)),
-      link('Telegram', '#229ED9', 'T', 'https://t.me/share/url?url=' + e(url) + '&text=' + e(tekst())),
+      knop(t('menu.sharePoll'), '', () => deel(a.url, t('share.text'), a.titel()), bol('⤴', 'var(--groen)')),
+      kopieer(a.url),
+      knop(t('menu.shareApp'), '', () => deel(appUrl, appTekst(), 'Whenly'), bol('W', '#6B7580')),
+      el('hr'),
+      knop(t('title.edit'), '', () => { sluit(); a.bewerk(); }, bol('✎', '#6B7580')),
+      nieuw,
+      knop(t('poll.delete'), 'gevaar', () => { sluit(); a.verwijder(); }, bol('×', 'var(--rood)')),
     );
-    const kopie = el('button'); kopie.type = 'button'; kopie.setAttribute('role', 'menuitem');
-    const bol = el('span', 'bol', '⧉'); bol.style.background = '#009E73'; bol.setAttribute('aria-hidden', 'true');
-    const lbl = el('span', '', t('share.copy'));
-    kopie.append(bol, lbl);
-    kopie.addEventListener('click', async () => {
-      try { await navigator.clipboard.writeText(url); lbl.textContent = t('share.copied'); setTimeout(sluit, 900); } catch { /* stil */ }
-    });
-    menu.append(kopie);
   }
   function vul() {
     btn.textContent = '';
     btn.append(icoon(), el('span', 'lbl', t('share.button')));
-    btn.setAttribute('aria-label', t('share.button') + ' Whenly');
-    btn.title = t('share.button') + ' Whenly';
-    vulMenu();
+    const label = hoekAfspraak ? t('menu.label') : t('share.button') + ' Whenly';
+    btn.setAttribute('aria-label', label);
+    btn.title = label;
+    if (isOpen()) { vulMenu(); } else { menu.textContent = ''; vulMenu(); }
   }
   btn.addEventListener('click', async (ev) => {
     ev.stopPropagation();
-    if (navigator.share) {
-      try { await navigator.share({ title: 'Whenly', text: tekst(), url }); return; } catch (e) {
-        if (e && e.name === 'AbortError') return;   // zelf geannuleerd
+    if (isOpen()) { sluit(); return; }
+    // startpagina op een telefoon: meteen het eigen deelmenu
+    if (!hoekAfspraak && navigator.share) {
+      try { await navigator.share({ title: 'Whenly', text: appTekst(), url: appUrl }); return; } catch (e) {
+        if (e && e.name === 'AbortError') return;
       }
     }
-    const open = menu.classList.contains('verborgen');
-    menu.classList.toggle('verborgen', !open);
-    btn.setAttribute('aria-expanded', String(open));
-    if (open) { const eerste = menu.querySelector('a, button'); if (eerste) eerste.focus(); }
+    vulMenu();
+    menu.classList.remove('verborgen');
+    btn.setAttribute('aria-expanded', 'true');
+    eersteFocus();
   });
-  document.addEventListener('click', (e) => { if (!menu.contains(e.target) && e.target !== btn) sluit(); });
-  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !menu.classList.contains('verborgen')) { sluit(); btn.focus(); } });
+  document.addEventListener('click', (e) => { if (!menu.contains(e.target) && e.target !== btn && !btn.contains(e.target)) sluit(); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && isOpen()) { sluit(); btn.focus(); } });
   vul();
   deelAppHertaal = vul;
 })();
@@ -3334,8 +3484,12 @@ function schermAfspraak(pollId) {
   const kopieKnop = el('button', 'klein kopieer'); kopieKnop.type = 'button';
   const deelKnop = el('button', 'klein delen'); deelKnop.type = 'button';
   const deelKnoppen = el('div', 'knoppen'); deelKnoppen.append(kopieKnop, deelKnop);
-  deel.append(deelTekst, deelUrl, deelKnoppen);
+  // de deelbalk toont alleen nog vlak na het maken (met een kruisje); daarna zit
+  // delen in de knop rechts in de hoek
+  const deelDicht = el('button', 'dicht', '×'); deelDicht.type = 'button';
+  deel.append(deelDicht, deelTekst, deelUrl, deelKnoppen);
   let netGemaakt = false;
+  deelDicht.addEventListener('click', () => { netGemaakt = false; deel.classList.add('verborgen'); document.getElementById('deelApp').focus(); });
   function deelIcoon() {
     const ns = 'http://www.w3.org/2000/svg';
     const svg = document.createElementNS(ns, 'svg');
@@ -3350,7 +3504,6 @@ function schermAfspraak(pollId) {
 
   const titelRij = el('div', 'titelrij');
   const titelKop = el('h1'); titelKop.dir = 'auto';
-  document.getElementById('nieuw').classList.remove('verborgen');
   const titelEditBtn = el('button', 'sec'); titelEditBtn.type = 'button';
   const titelEditor = el('div', 'titeleditor verborgen');
   const titelIn = el('input'); titelIn.type = 'text'; titelIn.maxLength = 80; titelIn.autocomplete = 'off'; titelIn.dir = 'auto';
@@ -3494,6 +3647,18 @@ function schermAfspraak(pollId) {
       clearTimeout(deelTimer);
       deelTimer = setTimeout(() => { zetDeelKnop(t('share.button')); }, 2000);
     } catch { /* stil */ }
+  });
+
+  // de knop rechts in de hoek krijgt de acties van deze afspraak
+  zetHoekAfspraak({
+    url: location.origin + '/p/' + pollId,
+    titel: () => (state.data && state.data.title) || 'Whenly',
+    bewerk: () => titelEditBtn.click(),
+    verwijder: () => {
+      alleBtn.click();
+      try { alleZone.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch {}
+      alleJa.focus({ preventScroll: true });
+    },
   });
 
   /* --- titel aanpassen (iedereen mag) --- */
@@ -4025,6 +4190,8 @@ function schermAfspraak(pollId) {
     titelEditBtn.textContent = t('title.edit');
     titelOk.textContent = t('title.save');
     titelIn.placeholder = t('make.what.ph');
+    deel.classList.toggle('verborgen', !netGemaakt);
+    deelDicht.setAttribute('aria-label', t('close'));
     deelTekst.textContent = (netGemaakt ? t('share.ready') : t('share.link')) + ' ';
     if (kopieKnop.textContent !== t('share.copied')) {
       kopieKnop.textContent = t('share.copy');
@@ -4180,6 +4347,7 @@ function schermAfspraak(pollId) {
 
   function schermOnbekend() {
     recentVergeet(pollId);
+    zetHoekAfspraak(null);
     scherm.textContent = '';
     const kop = el('h1', null, t('notfound.title'));
     const tekst = el('p', null, t('notfound.text'));
