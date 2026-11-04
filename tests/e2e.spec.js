@@ -1056,10 +1056,9 @@ test.describe("Scenario's", () => {
     // voettekst: FAQ- en privacy-link in de taal van de app
     await expect(page.locator('#voet a.privacy')).toHaveAttribute('href', '/nl/privacy');
     await expect(page.locator('#voet a.faq')).toHaveAttribute('href', '/nl/faq');
-    // de bezoekteller staat niet meer op de pagina
-    await expect(page.locator('#bezoek')).toBeHidden();
-    await expect(page.locator('body')).not.toContainText('Aantal bezocht');
-    await expect(page.locator('body')).not.toContainText('Times visited');
+    // bezoekteller staat onder de doneerknop, niet meer in de afspraak zelf
+    await expect(page.locator('#bezoek')).toContainText('Aantal bezocht');
+    expect(await page.evaluate(() => document.getElementById('bezoek').compareDocumentPosition(document.getElementById('doneer')) & Node.DOCUMENT_POSITION_PRECEDING)).toBeTruthy();
     await ctx.close();
   });
 
