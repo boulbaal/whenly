@@ -722,6 +722,49 @@ test.describe("Scenario's", () => {
     await ctx.close();
   });
 
+  test('S31 Whenly delen bovenaan: deelmenu van het toestel, anders WhatsApp/e-mail/Facebook/Telegram/kopiëren', async ({ browser, request }, testInfo) => {
+    // zonder navigator.share (computer): een klein menu met links
+    let ctx = await browser.newContext(ctxOpties(testInfo));
+    await ctx.addInitScript(() => { try { delete Navigator.prototype.share; } catch {} });
+    let page = await ctx.newPage();
+    await page.goto('/');
+    const knop = page.locator('#deelApp');
+    await expect(knop).toBeVisible();
+    await expect(knop).toHaveAttribute('aria-label', 'Deel Whenly');
+    await expect(page.locator('#deelAppMenu')).toBeHidden();
+    await knop.click();
+    const menu = page.locator('#deelAppMenu');
+    await expect(menu).toBeVisible();
+    await expect(knop).toHaveAttribute('aria-expanded', 'true');
+    const base = new URL(page.url()).origin + '/';
+    const wa = await menu.locator('a', { hasText: 'WhatsApp' }).getAttribute('href');
+    expect(wa.startsWith('https://wa.me/?text=')).toBe(true);
+    expect(decodeURIComponent(wa)).toContain('Prik samen een datum');
+    expect(decodeURIComponent(wa)).toContain(base);
+    expect(await menu.locator('a', { hasText: 'Facebook' }).getAttribute('href')).toBe('https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(base));
+    expect(await menu.locator('a', { hasText: 'E-mail' }).getAttribute('href')).toMatch(/^mailto:\?subject=Whenly&body=/);
+    await expect(menu.locator('a', { hasText: 'Telegram' })).toHaveCount(1);
+    await page.keyboard.press('Escape');
+    await expect(menu).toBeHidden();
+    await ctx.close();
+
+    // met navigator.share (telefoon): het eigen deelmenu, met de startpagina, ook vanop een afspraak
+    const { id } = await apiMaakPoll(request, { title: 'Etentje', name: 'Ali', options: [{ date: D1, time: T1 }] });
+    ctx = await browser.newContext(ctxOpties(testInfo));
+    await ctx.addInitScript(() => { navigator.share = (d) => { window.__gedeeld = d; return Promise.resolve(); }; });
+    page = await ctx.newPage();
+    await page.goto('/p/' + id);
+    await expect(page.locator('h1')).toHaveText('Etentje');
+    await page.locator('#deelApp').click();
+    const d = await page.evaluate(() => window.__gedeeld);
+    expect(d.url).toBe(new URL(page.url()).origin + '/');
+    expect(d.title).toBe('Whenly');
+    await expect(page.locator('#deelAppMenu')).toBeHidden();
+    // geen horizontaal scrollen met de extra knop
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true);
+    await ctx.close();
+  });
+
   test('S10 onbekende link', async ({ browser }, testInfo) => {
     const ctx = await browser.newContext(ctxOpties(testInfo));
     const page = await ctx.newPage();

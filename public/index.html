@@ -136,6 +136,29 @@
   /* vlaggetje */
   .kop { display: flex; align-items: center; position: relative; min-height: 44px; }
   #nieuw { margin-inline-start: auto; color: var(--groen); font-weight: 600; text-decoration: none; padding: 10px 0; min-height: 44px; display: inline-flex; align-items: center; gap: 4px; }
+  /* Whenly delen (bovenaan): telefoon = eigen deelmenu, computer = klein menu */
+  #deelApp {
+    margin-inline-start: 14px;
+    display: inline-flex; align-items: center; gap: 6px;
+    background: none; height: 44px; min-height: 44px; padding: 0 0 0 4px;
+    color: var(--groen); font-size: 14px; font-weight: 600;
+  }
+  #nieuw.verborgen + #deelApp { margin-inline-start: auto; }
+  #deelApp svg { flex: 0 0 auto; }
+  #deelAppMenu {
+    position: absolute; top: 46px; inset-inline-end: 0; z-index: 20;
+    background: #fff; border: 1px solid var(--lijn); border-radius: 10px; padding: 6px;
+    box-shadow: 0 8px 24px rgba(0,0,0,.12); min-width: 190px;
+  }
+  #deelAppMenu a, #deelAppMenu button {
+    display: flex; align-items: center; gap: 10px; width: 100%; min-height: 44px;
+    padding: 0 12px; border-radius: 8px; background: none; color: var(--tekst);
+    font-size: 15px; font-weight: 500; text-decoration: none; text-align: start;
+  }
+  #deelAppMenu a:hover, #deelAppMenu button:hover { background: var(--lijn); }
+  #deelAppMenu .bol { width: 22px; height: 22px; border-radius: 50%; display: inline-grid; place-items: center; color: #fff; font-size: 12px; font-weight: 700; flex: 0 0 auto; }
+  /* smal scherm met ook "+ Nieuwe afspraak" in de kop: alleen het icoon */
+  @media (max-width: 380px) { #nieuw:not(.verborgen) + #deelApp .lbl { display: none; } }
   #vlag {
     display: inline-flex;
     align-items: center;
@@ -451,6 +474,8 @@
     <button id="vlag" type="button"></button>
     <div id="talen" class="verborgen"></div>
     <a id="nieuw" class="verborgen" href="/"></a>
+    <button id="deelApp" type="button" aria-haspopup="menu" aria-expanded="false"></button>
+    <div id="deelAppMenu" class="verborgen" role="menu"></div>
   </div>
   <div id="scherm"></div>
   <div id="doneer" class="doneer verborgen">
@@ -2809,6 +2834,7 @@ function kiesTaal(l) {
   pasTaalToe();
   bouwTalen();
   doneerHertaal();
+  deelAppHertaal();
   hertaal();
 }
 
@@ -2890,6 +2916,78 @@ let doneerHertaal = () => {};
   });
   vul();
   doneerHertaal = vul;
+})();
+
+/* ---------- Whenly zelf delen (knop bovenaan) ---------- */
+// Op een telefoon: het eigen deelmenu van het toestel (WhatsApp, mail, Messenger ...).
+// Waar dat niet bestaat (computer): een klein menu met WhatsApp, e-mail, Facebook,
+// Telegram en link kopiëren. Deelt altijd de startpagina, niet een afspraak.
+let deelAppHertaal = () => {};
+(function deelApp() {
+  const btn = document.getElementById('deelApp');
+  const menu = document.getElementById('deelAppMenu');
+  const url = location.origin + '/';
+  const ns = 'http://www.w3.org/2000/svg';
+  function icoon() {
+    const svg = document.createElementNS(ns, 'svg');
+    svg.setAttribute('viewBox', '0 0 24 24'); svg.setAttribute('width', '20'); svg.setAttribute('height', '20'); svg.setAttribute('aria-hidden', 'true');
+    const p = document.createElementNS(ns, 'path');
+    p.setAttribute('d', 'M18 16a3 3 0 0 0-2.4 1.2l-7-4.1a3 3 0 0 0 0-2.2l7-4.1A3 3 0 1 0 15 5a3 3 0 0 0 .1.8l-7 4.1a3 3 0 1 0 0 4.2l7 4.1A3 3 0 1 0 18 16z');
+    p.setAttribute('fill', 'currentColor');
+    svg.append(p);
+    return svg;
+  }
+  const tekst = () => t('make.title') + ' ' + t('make.tagline');
+  function sluit() { menu.classList.add('verborgen'); btn.setAttribute('aria-expanded', 'false'); }
+  function link(naam, kleur, letter, href) {
+    const a = el('a'); a.href = href; a.target = '_blank'; a.rel = 'noopener'; a.setAttribute('role', 'menuitem');
+    const bol = el('span', 'bol', letter); bol.style.background = kleur; bol.setAttribute('aria-hidden', 'true');
+    a.append(bol, document.createTextNode(naam));
+    a.addEventListener('click', sluit);
+    return a;
+  }
+  function vulMenu() {
+    menu.textContent = '';
+    const msg = tekst() + ' ' + url;
+    const e = encodeURIComponent;
+    menu.append(
+      link('WhatsApp', '#25D366', 'W', 'https://wa.me/?text=' + e(msg)),
+      link('E-mail', '#6B7580', '@', 'mailto:?subject=' + e('Whenly') + '&body=' + e(msg)),
+      link('Facebook', '#1877F2', 'f', 'https://www.facebook.com/sharer/sharer.php?u=' + e(url)),
+      link('Telegram', '#229ED9', 'T', 'https://t.me/share/url?url=' + e(url) + '&text=' + e(tekst())),
+    );
+    const kopie = el('button'); kopie.type = 'button'; kopie.setAttribute('role', 'menuitem');
+    const bol = el('span', 'bol', '⧉'); bol.style.background = '#009E73'; bol.setAttribute('aria-hidden', 'true');
+    const lbl = el('span', '', t('share.copy'));
+    kopie.append(bol, lbl);
+    kopie.addEventListener('click', async () => {
+      try { await navigator.clipboard.writeText(url); lbl.textContent = t('share.copied'); setTimeout(sluit, 900); } catch { /* stil */ }
+    });
+    menu.append(kopie);
+  }
+  function vul() {
+    btn.textContent = '';
+    btn.append(icoon(), el('span', 'lbl', t('share.button')));
+    btn.setAttribute('aria-label', t('share.button') + ' Whenly');
+    btn.title = t('share.button') + ' Whenly';
+    vulMenu();
+  }
+  btn.addEventListener('click', async (ev) => {
+    ev.stopPropagation();
+    if (navigator.share) {
+      try { await navigator.share({ title: 'Whenly', text: tekst(), url }); return; } catch (e) {
+        if (e && e.name === 'AbortError') return;   // zelf geannuleerd
+      }
+    }
+    const open = menu.classList.contains('verborgen');
+    menu.classList.toggle('verborgen', !open);
+    btn.setAttribute('aria-expanded', String(open));
+    if (open) { const eerste = menu.querySelector('a, button'); if (eerste) eerste.focus(); }
+  });
+  document.addEventListener('click', (e) => { if (!menu.contains(e.target) && e.target !== btn) sluit(); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !menu.classList.contains('verborgen')) { sluit(); btn.focus(); } });
+  vul();
+  deelAppHertaal = vul;
 })();
 
 const scherm = document.getElementById('scherm');
