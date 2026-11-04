@@ -4315,8 +4315,10 @@ function schermAfspraak(pollId) {
     alleJa.textContent = t('poll.deleteYes');
     alleNee.textContent = t('poll.leaveNo');
 
-    bezoek.textContent = t('visits', { n: d.visits || 0 });
-    bezoek.classList.remove('verborgen');
+    // de bezoekteller tonen we niet meer (keuze van Ali, nov 2026); het tellen zelf
+    // blijft, omdat een bezoek ook als activiteit telt voor het opruimen van oude afspraken
+    bezoek.textContent = '';
+    bezoek.classList.add('verborgen');
 
     // startmaand: de definitieve dag, anders de eerste dag vanaf vandaag, anders nu
     if (!state.kalGezet) {
