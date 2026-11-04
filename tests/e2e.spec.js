@@ -417,7 +417,10 @@ test.describe("Scenario's", () => {
     await expect(ali.locator('#nieuw')).toHaveText('+ Nieuwe afspraak');
     await expect(ali.locator('h1')).toHaveText('Etentje');
     await expect(ali.locator('#voet')).toContainText('vdev'); // versie-label (dev in de testomgeving)
-    await expect(ali.locator('.wie')).toBeHidden(); // je bent gewoon jezelf: geen extra regel
+    // balk boven de kalender: voor wie klik je (jezelf, in je eigen kleur)
+    await expect(ali.locator('.wie')).toContainText('Je klikt voor Ali (jij)');
+    await expect(ali.locator('#kalhint')).toHaveText('Klik de dagen aan waarop Ali kan');
+    await expect(ali.locator('.stapblok')).not.toHaveClass(/open/);
     await expect(ali.locator('.chip.ik')).toContainText('Ali');
     await expect(ali.locator('.kopje', { hasText: 'Deelnemers' })).toBeVisible();
     await expect(ali.locator('.chip', { hasText: 'Ali (jij)' })).toHaveClass(/ik/);
@@ -445,16 +448,26 @@ test.describe("Scenario's", () => {
     await expect(sofie.locator('.deel')).toContainText('Deel deze link:'); // altijd zichtbaar, nooit kwijt
     await expect(sofie.locator('#joinnaam')).toBeVisible();
     await expect(sofie.locator('.kal')).toHaveClass(/inactief/);
-    await expect(sofie.locator('#kalhint')).toHaveText('Vul eerst je naam in om aan te klikken.');
+    // stap 1 "Wie ben jij?" staat omkaderd; de kalender (stap 2) is nog op slot
+    await expect(sofie.locator('#kalhint')).toHaveText('Kies eerst wie je bent');
+    await expect(sofie.locator('.stapblok')).toHaveClass(/open/);
+    await expect(sofie.locator('.stapkop')).toHaveText('Wie ben jij?');
+    await expect(sofie.locator('label[for="joinnaam"]')).toHaveText('Sta je er nog niet bij? Typ je naam:');
+    await expect(sofie.locator('.wie')).toBeHidden();
     // een nieuwe bezoeker ziet de bestaande namen al staan (Ali)
     await expect(sofie.locator('.chips .chip')).toHaveCount(1);
     await expect(sofie.locator('.chip', { hasText: 'Ali' })).toBeVisible();
     await toonMaand(sofie, MAAND);
     await dag(sofie, D1).click();
+    // klik op een dag zonder naam: terug naar stap 1, die even oplicht, en geen vinkje
     await expect(sofie.locator('#joinnaam')).toBeFocused();
+    await expect(sofie.locator('.stapblok')).toHaveClass(/knipper/);
+    await expect(dag(sofie, D1)).not.toHaveClass(/mijn/);
     await sofie.fill('#joinnaam', 'Sofie');
     await sofie.press('#joinnaam', 'Enter');
     await expect(sofie.locator('.kal')).not.toHaveClass(/inactief/);
+    await expect(sofie.locator('.stapblok')).not.toHaveClass(/open/);
+    await expect(sofie.locator('.wie')).toContainText('Je klikt voor Sofie (jij)');
     await expect(sofie.locator('.chip.ik')).toContainText('Sofie');
     await toonMaand(sofie, MAAND);
     await dag(sofie, D1).click();
@@ -484,8 +497,11 @@ test.describe("Scenario's", () => {
     await sofie.locator('.chip.toevoegen', { hasText: 'Lid toevoegen' }).click();
     await sofie.locator('.nieuw input').fill('Tom');
     await sofie.locator('.nieuw button', { hasText: 'Toevoegen' }).click();
-    await expect(sofie.locator('.wie')).toContainText('Je vult nu in voor');
+    await expect(sofie.locator('.wie')).toContainText('Je klikt voor Tom');
+    await expect(sofie.locator('.wie')).not.toContainText('(jij)');
     await expect(sofie.locator('.wie b')).toHaveText('Tom');
+    await expect(sofie.locator('#kalhint')).toHaveText('Klik de dagen aan waarop Tom kan');
+    await expect(sofie.locator('.legenda')).toContainText('Tom kan');
     await expect(sofie.locator('.chip:not(.toevoegen)')).toHaveCount(3);
     await expect(sofie.locator('.chip', { hasText: 'Tom' })).toHaveClass(/ik/);
     await expect(sofie.locator('.chip', { hasText: 'Sofie (jij)' })).toBeVisible();
@@ -537,7 +553,8 @@ test.describe("Scenario's", () => {
     // klik op je eigen chip en je bent weer gewoon jezelf
     await sofie.locator('.chip', { hasText: 'Sofie (jij)' }).click();
     await expect(sofie.locator('.chip.ik')).toContainText('Sofie');
-    await expect(sofie.locator('.wie')).toBeHidden();
+    await expect(sofie.locator('.wie')).toContainText('Je klikt voor Sofie (jij)');
+    await expect(sofie.locator('.wie button')).toHaveText('iemand anders');
     await toonMaand(sofie, MAAND);
     await expect(dag(sofie, D1)).toHaveClass(/mijn/);
     // het invullen voor Tom heeft je opgeslagen eigen naam NIET overschreven
@@ -765,6 +782,25 @@ test.describe("Scenario's", () => {
     await ctx.close();
   });
 
+  test('S32 na een klik zie je voor wie de dag is aangevinkt; "iemand anders" wijst naar de namen', async ({ browser, request }, testInfo) => {
+    const { id, participantId } = await apiMaakPoll(request, { title: 'Efteling', name: 'Ali', options: [] });
+    const ctx = await browser.newContext(ctxOpties(testInfo));
+    await ctx.addInitScript(([pid, pol]) => { localStorage.setItem('prikdatum.p.' + pol, pid); }, [participantId, id]);
+    const page = await ctx.newPage();
+    await page.goto('/p/' + id);
+    await toonMaand(page, MAAND);
+    await dag(page, D1).click();
+    await expect(page.locator('.klikmelding')).toHaveText(/aangevinkt voor Ali$/);
+    await expect(dag(page, D1)).toHaveClass(/mijn/);
+    await dag(page, D1).click();
+    await expect(page.locator('.klikmelding')).toHaveText(/weggehaald voor Ali$/);
+    // "iemand anders": de namen lichten op, de focus staat op "+ Lid toevoegen"
+    await page.locator('.wie button', { hasText: 'iemand anders' }).click();
+    await expect(page.locator('.stapblok')).toHaveClass(/knipper/);
+    await expect(page.locator('.chip.toevoegen')).toBeFocused();
+    await ctx.close();
+  });
+
   test('S10 onbekende link', async ({ browser }, testInfo) => {
     const ctx = await browser.newContext(ctxOpties(testInfo));
     const page = await ctx.newPage();
@@ -786,10 +822,10 @@ test.describe("Scenario's", () => {
     await expect(page.locator('.status .groot')).toHaveText(/vr 9 okt 2037 om 18:00/);
     await page.locator('#vlag').click();
     await page.locator('#talen button', { hasText: 'English' }).click();
-    await expect(page.locator('#kalhint')).toHaveText('Enter your name first to start ticking.');
+    await expect(page.locator('#kalhint')).toHaveText('Choose who you are first');
     await expect(page.locator('.status .groot')).toHaveText(/Fri,? 9 Oct,? 2037 at 18:00/);
     await page.reload();
-    await expect(page.locator('#kalhint')).toHaveText('Enter your name first to start ticking.');
+    await expect(page.locator('#kalhint')).toHaveText('Choose who you are first');
     await page.locator('#vlag').click();
     await page.locator('#talen button', { hasText: 'Français' }).click();
     await expect(page.locator('.status .groot')).toHaveText(/ven\.?.*9 oct\.?.*à 18:00/);
@@ -832,7 +868,7 @@ test.describe("Scenario's", () => {
     await expect(page.locator('h1')).toHaveText('عشاء');
     expect(await page.evaluate(() => document.documentElement.dir)).toBe('rtl');
     expect(await page.evaluate(() => document.documentElement.lang)).toBe('ar');
-    await expect(page.locator('#kalhint')).toHaveText('أدخل اسمك أولاً لتحديد الأيام.');
+    await expect(page.locator('#kalhint')).toHaveText('اختر أولاً من أنت');
     // Egypte: de week begint op zaterdag; korte weekdag = één letter
     const kop = await page.locator('.maandblok').first().locator('.kalwd').allTextContents();
     expect(kop.length).toBe(7);

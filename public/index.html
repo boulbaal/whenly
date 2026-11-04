@@ -261,9 +261,30 @@
   .naampje { display: inline-flex; align-items: center; margin-inline-end: 10px; white-space: nowrap; }
 
   /* wie ben je + gekleurde naamchips */
-  .wie { font-size: 15px; margin: 16px 0 0; }
-  .wie b { font-weight: 600; unicode-bidi: isolate; }
+  /* stap 1: wie ben jij? (zolang je nog niemand gekozen hebt: een omkaderd blok) */
+  .stapblok { margin: 16px 0 0; }
+  .stapblok.open { border: 2px solid var(--groen); border-radius: 12px; padding: 12px 14px 16px; }
+  .stapblok.open .kopje { margin-top: 4px; }
+  .stapkop { display: flex; align-items: center; gap: 10px; font-size: 19px; font-weight: 700; margin: 0 0 4px; }
+  .stapkop::before, #kalhint.slot::before {
+    content: '1'; flex: 0 0 auto; width: 26px; height: 26px; border-radius: 50%;
+    background: var(--groen); color: #fff; display: inline-grid; place-items: center; font-size: 14px; font-weight: 700;
+  }
+  #kalhint.slot::before { content: '2'; background: var(--gedempt); }
+  #kalhint.slot { display: flex; align-items: center; gap: 10px; font-weight: 600; }
+  #kalhint b { font-weight: 700; unicode-bidi: isolate; }
+  .stapblok.knipper { animation: knipper 1.2s ease-out 1; }
+  @keyframes knipper { 0%, 50% { box-shadow: 0 0 0 7px var(--lichtgroen); } 100% { box-shadow: 0 0 0 0 transparent; } }
+  @media (prefers-reduced-motion: reduce) { .stapblok.knipper { animation: none; outline: 3px solid var(--groen); } }
+  /* balk boven de kalender: voor wie klik je nu? (in de kleur van die persoon) */
+  .wie {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 2px 6px;
+    font-size: 16px; margin: 0 0 10px; padding: 6px 12px; border-radius: 10px;
+    background: var(--lichtgroen); border-inline-start: 6px solid var(--ik, var(--groen));
+  }
+  .wie b { font-weight: 700; unicode-bidi: isolate; }
   .wie button.sec { padding: 4px 6px; min-height: 44px; font-size: 14px; }
+  .klikmelding { font-size: 14px; color: var(--gedempt); min-height: 1.3em; margin: 6px 0 0; }
   .chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0 0; }
   .chip {
     display: inline-flex;
@@ -331,7 +352,7 @@
   .dag.leeg { border: none; background: none; cursor: default; }
   .dag.vandaag { border-color: var(--gedempt); }
   .dag.optie { border-color: var(--groen); }
-  .dag.mijn { background: var(--lichtgroen); border-color: var(--groen); font-weight: 600; }
+  .dag.mijn { background: var(--lichtgroen); border-color: var(--ik, var(--groen)); box-shadow: inset 0 0 0 1px var(--ik, var(--groen)); font-weight: 600; }
   .dag.definitief { box-shadow: inset 3px 0 0 var(--groen); }
   [dir="rtl"] .dag.definitief { box-shadow: inset -3px 0 0 var(--groen); }
   [dir="rtl"] .kalkop button { transform: scaleX(-1); }
@@ -607,6 +628,15 @@ en: {
   'members.addBtn': 'Add',
   'members.actingFor': 'You are filling in for {name}.',
   'members.backToMe': 'back to me',
+  'who.title': 'Who are you?',
+  'who.new': 'Not on the list yet? Type your name:',
+  'cal.locked': 'Choose who you are first',
+  'cal.hintFor': 'Click the days that work for {name}',
+  'acting.for': 'You are ticking for {name}',
+  'acting.switch': 'someone else',
+  'legend.name': '{name} can',
+  'tick.added': '{date}: ticked for {name}',
+  'tick.removed': '{date}: unticked for {name}',
   'err.past_date': 'That day has already passed.',
 },
 nl: {
@@ -695,6 +725,15 @@ nl: {
   'members.addBtn': 'Toevoegen',
   'members.actingFor': 'Je vult nu in voor {name}.',
   'members.backToMe': 'terug naar mezelf',
+  'who.title': 'Wie ben jij?',
+  'who.new': 'Sta je er nog niet bij? Typ je naam:',
+  'cal.locked': 'Kies eerst wie je bent',
+  'cal.hintFor': 'Klik de dagen aan waarop {name} kan',
+  'acting.for': 'Je klikt voor {name}',
+  'acting.switch': 'iemand anders',
+  'legend.name': '{name} kan',
+  'tick.added': '{date}: aangevinkt voor {name}',
+  'tick.removed': '{date}: weggehaald voor {name}',
   'err.past_date': 'Die dag is al voorbij.',
 },
 fr: {
@@ -783,6 +822,15 @@ fr: {
   'members.addBtn': 'Ajouter',
   'members.actingFor': 'Tu remplis pour {name}.',
   'members.backToMe': 'revenir à moi',
+  'who.title': 'Qui es-tu ?',
+  'who.new': 'Pas encore dans la liste ? Tape ton prénom :',
+  'cal.locked': 'Choisis d\'abord qui tu es',
+  'cal.hintFor': 'Clique sur les jours qui conviennent à {name}',
+  'acting.for': 'Tu coches pour {name}',
+  'acting.switch': 'quelqu\'un d\'autre',
+  'legend.name': '{name} peut',
+  'tick.added': '{date} : coché pour {name}',
+  'tick.removed': '{date} : décoché pour {name}',
   'err.past_date': 'Ce jour est déjà passé.',
 },
 de: {
@@ -871,6 +919,15 @@ de: {
   'members.addBtn': 'Hinzufügen',
   'members.actingFor': 'Du trägst gerade für {name} ein.',
   'members.backToMe': 'zurück zu mir',
+  'who.title': 'Wer bist du?',
+  'who.new': 'Noch nicht auf der Liste? Gib deinen Namen ein:',
+  'cal.locked': 'Wähle zuerst, wer du bist',
+  'cal.hintFor': 'Klicke die Tage an, die {name} passen',
+  'acting.for': 'Du trägst gerade für {name} ein',
+  'acting.switch': 'jemand anderes',
+  'legend.name': '{name} kann',
+  'tick.added': '{date}: für {name} angehakt',
+  'tick.removed': '{date}: für {name} entfernt',
   'err.past_date': 'Dieser Tag ist schon vorbei.',
 },
 es: {
@@ -959,6 +1016,15 @@ es: {
   'members.addBtn': 'Añadir',
   'members.actingFor': 'Estás rellenando por {name}.',
   'members.backToMe': 'volver a mí',
+  'who.title': '¿Quién eres?',
+  'who.new': '¿Aún no estás en la lista? Escribe tu nombre:',
+  'cal.locked': 'Elige primero quién eres',
+  'cal.hintFor': 'Marca los días que le vienen bien a {name}',
+  'acting.for': 'Estás marcando por {name}',
+  'acting.switch': 'otra persona',
+  'legend.name': '{name} puede',
+  'tick.added': '{date}: marcado para {name}',
+  'tick.removed': '{date}: desmarcado para {name}',
   'err.past_date': 'Ese día ya pasó.',
 },
 pt: {
@@ -1047,6 +1113,15 @@ pt: {
   'members.addBtn': 'Adicionar',
   'members.actingFor': 'Estás a preencher por {name}.',
   'members.backToMe': 'voltar a mim',
+  'who.title': 'Quem és tu?',
+  'who.new': 'Ainda não estás na lista? Escreve o teu nome:',
+  'cal.locked': 'Escolhe primeiro quem és',
+  'cal.hintFor': 'Marca os dias que dão jeito a {name}',
+  'acting.for': 'Estás a marcar por {name}',
+  'acting.switch': 'outra pessoa',
+  'legend.name': '{name} pode',
+  'tick.added': '{date}: marcado para {name}',
+  'tick.removed': '{date}: desmarcado para {name}',
   'err.past_date': 'Esse dia já passou.',
 },
 pl: {
@@ -1135,6 +1210,15 @@ pl: {
   'members.addBtn': 'Dodaj',
   'members.actingFor': 'Wypełniasz za {name}.',
   'members.backToMe': 'wróć do siebie',
+  'who.title': 'Kim jesteś?',
+  'who.new': 'Nie ma cię jeszcze na liście? Wpisz swoje imię:',
+  'cal.locked': 'Najpierw wybierz, kim jesteś',
+  'cal.hintFor': 'Zaznacz dni, kiedy {name} może',
+  'acting.for': 'Zaznaczasz za {name}',
+  'acting.switch': 'ktoś inny',
+  'legend.name': '{name} może',
+  'tick.added': '{date}: zaznaczono dla {name}',
+  'tick.removed': '{date}: odznaczono dla {name}',
   'err.past_date': 'Ten dzień już minął.',
 },
 uk: {
@@ -1223,6 +1307,15 @@ uk: {
   'members.addBtn': 'Додати',
   'members.actingFor': 'Ви заповнюєте за {name}.',
   'members.backToMe': 'назад до себе',
+  'who.title': 'Хто ви?',
+  'who.new': 'Вас ще немає у списку? Введіть своє ім’я:',
+  'cal.locked': 'Спочатку оберіть, хто ви',
+  'cal.hintFor': 'Відмітьте дні, коли може {name}',
+  'acting.for': 'Ви відмічаєте за {name}',
+  'acting.switch': 'хтось інший',
+  'legend.name': '{name} може',
+  'tick.added': '{date}: відмічено для {name}',
+  'tick.removed': '{date}: відмітку знято для {name}',
   'err.past_date': 'Цей день уже минув.',
 },
 ru: {
@@ -1311,6 +1404,15 @@ ru: {
   'members.addBtn': 'Добавить',
   'members.actingFor': 'Вы заполняете за {name}.',
   'members.backToMe': 'назад к себе',
+  'who.title': 'Кто вы?',
+  'who.new': 'Вас ещё нет в списке? Введите своё имя:',
+  'cal.locked': 'Сначала выберите, кто вы',
+  'cal.hintFor': 'Отметьте дни, когда может {name}',
+  'acting.for': 'Вы отмечаете за {name}',
+  'acting.switch': 'кто-то другой',
+  'legend.name': '{name} может',
+  'tick.added': '{date}: отмечено для {name}',
+  'tick.removed': '{date}: отметка снята для {name}',
   'err.past_date': 'Этот день уже прошёл.',
 },
 tr: {
@@ -1399,6 +1501,15 @@ tr: {
   'members.addBtn': 'Ekle',
   'members.actingFor': '{name} için dolduruyorsun.',
   'members.backToMe': 'kendime dön',
+  'who.title': 'Sen kimsin?',
+  'who.new': 'Henüz listede yok musun? Adını yaz:',
+  'cal.locked': 'Önce kim olduğunu seç',
+  'cal.hintFor': '{name} için uygun günleri işaretle',
+  'acting.for': '{name} için işaretliyorsun',
+  'acting.switch': 'başka biri',
+  'legend.name': '{name} uygun',
+  'tick.added': '{date}: {name} için işaretlendi',
+  'tick.removed': '{date}: {name} için kaldırıldı',
   'err.past_date': 'O gün geçti bile.',
 },
 ar: {
@@ -1487,6 +1598,15 @@ ar: {
   'members.addBtn': 'إضافة',
   'members.actingFor': 'أنت تملأ نيابة عن {name}.',
   'members.backToMe': 'العودة إليّ',
+  'who.title': 'من أنت؟',
+  'who.new': 'لست في القائمة بعد؟ اكتب اسمك:',
+  'cal.locked': 'اختر أولاً من أنت',
+  'cal.hintFor': 'حدد الأيام التي تناسب {name}',
+  'acting.for': 'أنت تحدد نيابة عن {name}',
+  'acting.switch': 'شخص آخر',
+  'legend.name': '{name} متاح',
+  'tick.added': '{date}: تم التحديد لـ {name}',
+  'tick.removed': '{date}: تم إلغاء التحديد لـ {name}',
   'err.past_date': 'هذا اليوم قد مضى.',
 },
 ur: {
@@ -1575,6 +1695,15 @@ ur: {
   'members.addBtn': 'شامل کریں',
   'members.actingFor': 'آپ {name} کے لیے بھر رہے ہیں۔',
   'members.backToMe': 'واپس اپنے آپ پر',
+  'who.title': 'آپ کون ہیں؟',
+  'who.new': 'ابھی فہرست میں نہیں ہیں؟ اپنا نام لکھیں:',
+  'cal.locked': 'پہلے چنیں کہ آپ کون ہیں',
+  'cal.hintFor': 'وہ دن چنیں جو {name} کے لیے ٹھیک ہوں',
+  'acting.for': 'آپ {name} کے لیے چن رہے ہیں',
+  'acting.switch': 'کوئی اور',
+  'legend.name': '{name} کے لیے ٹھیک',
+  'tick.added': '{date}: {name} کے لیے چن لیا گیا',
+  'tick.removed': '{date}: {name} کے لیے ہٹا دیا گیا',
   'err.past_date': 'وہ دن گزر چکا ہے۔',
 },
 hi: {
@@ -1663,6 +1792,15 @@ hi: {
   'members.addBtn': 'जोड़ें',
   'members.actingFor': 'आप {name} के लिए भर रहे हैं।',
   'members.backToMe': 'वापस अपने पर',
+  'who.title': 'आप कौन हैं?',
+  'who.new': 'अभी सूची में नहीं हैं? अपना नाम लिखें:',
+  'cal.locked': 'पहले चुनें कि आप कौन हैं',
+  'cal.hintFor': 'वे दिन चुनें जो {name} के लिए ठीक हों',
+  'acting.for': 'आप {name} के लिए चुन रहे हैं',
+  'acting.switch': 'कोई और',
+  'legend.name': '{name} के लिए ठीक',
+  'tick.added': '{date}: {name} के लिए चुना गया',
+  'tick.removed': '{date}: {name} के लिए हटाया गया',
   'err.past_date': 'वह दिन बीत चुका है।',
 },
 bn: {
@@ -1751,6 +1889,15 @@ bn: {
   'members.addBtn': 'যোগ করুন',
   'members.actingFor': 'আপনি {name}-এর হয়ে পূরণ করছেন।',
   'members.backToMe': 'নিজের কাছে ফিরুন',
+  'who.title': 'আপনি কে?',
+  'who.new': 'এখনও তালিকায় নেই? আপনার নাম লিখুন:',
+  'cal.locked': 'আগে বেছে নিন আপনি কে',
+  'cal.hintFor': 'যে দিনগুলো {name}-এর জন্য ঠিক সেগুলো বেছে নিন',
+  'acting.for': 'আপনি {name}-এর হয়ে বাছছেন',
+  'acting.switch': 'অন্য কেউ',
+  'legend.name': '{name} পারবেন',
+  'tick.added': '{date}: {name}-এর জন্য বাছা হয়েছে',
+  'tick.removed': '{date}: {name}-এর জন্য সরানো হয়েছে',
   'err.past_date': 'সেই দিন পেরিয়ে গেছে।',
 },
 id: {
@@ -1839,6 +1986,15 @@ id: {
   'members.addBtn': 'Tambah',
   'members.actingFor': 'Kamu mengisi untuk {name}.',
   'members.backToMe': 'kembali ke saya',
+  'who.title': 'Kamu siapa?',
+  'who.new': 'Belum ada di daftar? Ketik nama kamu:',
+  'cal.locked': 'Pilih dulu siapa kamu',
+  'cal.hintFor': 'Klik hari yang cocok untuk {name}',
+  'acting.for': 'Kamu mencentang untuk {name}',
+  'acting.switch': 'orang lain',
+  'legend.name': '{name} bisa',
+  'tick.added': '{date}: dicentang untuk {name}',
+  'tick.removed': '{date}: centang dihapus untuk {name}',
   'err.past_date': 'Hari itu sudah lewat.',
 },
 vi: {
@@ -1927,6 +2083,15 @@ vi: {
   'members.addBtn': 'Thêm',
   'members.actingFor': 'Bạn đang điền giúp {name}.',
   'members.backToMe': 'quay lại tôi',
+  'who.title': 'Bạn là ai?',
+  'who.new': 'Chưa có tên trong danh sách? Nhập tên bạn:',
+  'cal.locked': 'Hãy chọn bạn là ai trước',
+  'cal.hintFor': 'Nhấn vào những ngày {name} rảnh',
+  'acting.for': 'Bạn đang chọn giúp {name}',
+  'acting.switch': 'người khác',
+  'legend.name': '{name} rảnh',
+  'tick.added': '{date}: đã chọn cho {name}',
+  'tick.removed': '{date}: đã bỏ chọn cho {name}',
   'err.past_date': 'Ngày đó đã qua rồi.',
 },
 zh: {
@@ -2015,6 +2180,15 @@ zh: {
   'members.addBtn': '添加',
   'members.actingFor': '你正在替 {name} 填写。',
   'members.backToMe': '回到自己',
+  'who.title': '你是谁？',
+  'who.new': '名单上还没有你？输入你的名字：',
+  'cal.locked': '请先选择你是谁',
+  'cal.hintFor': '点选 {name} 方便的日子',
+  'acting.for': '你正在替 {name} 点选',
+  'acting.switch': '其他人',
+  'legend.name': '{name} 可以',
+  'tick.added': '{date}：已为 {name} 勾选',
+  'tick.removed': '{date}：已为 {name} 取消勾选',
   'err.past_date': '那一天已经过去了。',
 },
 ja: {
@@ -2103,6 +2277,15 @@ ja: {
   'members.addBtn': '追加',
   'members.actingFor': '{name} の代わりに入力中です。',
   'members.backToMe': '自分に戻る',
+  'who.title': 'あなたは誰ですか？',
+  'who.new': 'まだリストにいませんか？名前を入力：',
+  'cal.locked': 'まず自分が誰かを選んでください',
+  'cal.hintFor': '{name} の都合のよい日をタップ',
+  'acting.for': '{name} の代わりに選択中です',
+  'acting.switch': '他の人',
+  'legend.name': '{name} OK',
+  'tick.added': '{date}：{name} の分をチェックしました',
+  'tick.removed': '{date}：{name} の分のチェックを外しました',
   'err.past_date': 'その日はもう過ぎています。',
 },
 ko: {
@@ -2191,6 +2374,15 @@ ko: {
   'members.addBtn': '추가',
   'members.actingFor': '{name} 대신 입력 중이에요.',
   'members.backToMe': '나로 돌아가기',
+  'who.title': '누구인가요?',
+  'who.new': '아직 목록에 없나요? 이름을 입력하세요:',
+  'cal.locked': '먼저 누구인지 선택하세요',
+  'cal.hintFor': '{name} 님이 가능한 날을 누르세요',
+  'acting.for': '{name} 대신 선택 중이에요',
+  'acting.switch': '다른 사람',
+  'legend.name': '{name} 가능',
+  'tick.added': '{date}: {name} 님 체크됨',
+  'tick.removed': '{date}: {name} 님 체크 해제됨',
   'err.past_date': '그날은 이미 지났어요.',
 },
 sw: {
@@ -2279,6 +2471,15 @@ sw: {
   'members.addBtn': 'Ongeza',
   'members.actingFor': 'Unajaza kwa niaba ya {name}.',
   'members.backToMe': 'rudi kwangu',
+  'who.title': 'Wewe ni nani?',
+  'who.new': 'Bado huko kwenye orodha? Andika jina lako:',
+  'cal.locked': 'Chagua kwanza wewe ni nani',
+  'cal.hintFor': 'Bofya siku zinazomfaa {name}',
+  'acting.for': 'Unachagua kwa niaba ya {name}',
+  'acting.switch': 'mtu mwingine',
+  'legend.name': '{name} anaweza',
+  'tick.added': '{date}: imechaguliwa kwa {name}',
+  'tick.removed': '{date}: imeondolewa kwa {name}',
   'err.past_date': 'Siku hiyo imeshapita.',
 },
 zgh: {
@@ -2367,6 +2568,15 @@ zgh: {
   'members.addBtn': 'ⵔⵏⵓ',
   'members.actingFor': 'ⴰⵔ ⵜⵙⵎⴷⵉⴷ ⵉ {name}.',
   'members.backToMe': 'ⴰⵖⵓⵍ ⵖⵓⵔⵉ',
+  'who.title': 'ⵎⴰⵏⵡⴰ ⴽⵢⵢⵉ?',
+  'who.new': 'ⵓⵔ ⵜⴰ ⵜⵍⵍⵉⴷ ⴳ ⵜⵍⴳⴰⵎⵜ? ⴰⵔⴰ ⵉⵙⵎ ⵏⵏⴽ:',
+  'cal.locked': 'ⵙⵜⵉ ⵜⴰⵣⵡⴰⵔⴰ ⵎⴰⵏⵡⴰ ⴽⵢⵢⵉ',
+  'cal.hintFor': 'ⵙⵉⵜ ⵅⴼ ⵓⵙⵙⴰⵏ ⵏⵏⴰ ⴳ ⵉⵣⵎⵔ {name}',
+  'acting.for': 'ⴰⵔ ⵜⵙⵜⵉⴷ ⵉ {name}',
+  'acting.switch': 'ⵢⴰⵏ ⵢⴰⴹⵏ',
+  'legend.name': '{name} ⵉⵣⵎⵔ',
+  'tick.added': '{date}: ⵉⵜⵜⵓⵙⵜⴰ ⵉ {name}',
+  'tick.removed': '{date}: ⵉⵜⵜⵓⴽⴽⵙ ⵉ {name}',
   'err.past_date': 'ⴰⵙⵙ ⴰⴷ ⵉⵣⵔⵉ ⵢⴰⴷ.',
 },
 ku: {
@@ -2455,6 +2665,15 @@ ku: {
   'members.addBtn': 'Zêde bike',
   'members.actingFor': 'Tu ji bo {name} dagirî.',
   'members.backToMe': 'vegere ser min',
+  'who.title': 'Tu kî yî?',
+  'who.new': 'Hê ne di lîsteyê de yî? Navê xwe binivîse:',
+  'cal.locked': 'Pêşî hilbijêre tu kî yî',
+  'cal.hintFor': 'Rojên ku ji {name} re dibin nîşan bike',
+  'acting.for': 'Tu ji bo {name} nîşan dikî',
+  'acting.switch': 'kesekî din',
+  'legend.name': '{name} dikare',
+  'tick.added': '{date}: ji bo {name} hate nîşankirin',
+  'tick.removed': '{date}: ji bo {name} hate rakirin',
   'err.past_date': 'Ew roj derbas bûye.',
 },
 sn: {
@@ -2543,6 +2762,15 @@ sn: {
   'members.addBtn': 'Wedzera',
   'members.actingFor': 'Uri kuzadzira {name}.',
   'members.backToMe': 'dzokera kwandiri',
+  'who.title': 'Ndiwe ani?',
+  'who.new': 'Hausati uri pane rondedzero? Nyora zita rako:',
+  'cal.locked': 'Tanga wasarudza kuti ndiwe ani',
+  'cal.hintFor': 'Dzvanya mazuva anoitira {name}',
+  'acting.for': 'Uri kusarudzira {name}',
+  'acting.switch': 'mumwe munhu',
+  'legend.name': '{name} anokwanisa',
+  'tick.added': '{date}: rasarudzirwa {name}',
+  'tick.removed': '{date}: rabviswa kuna {name}',
   'err.past_date': 'Zuva iroro rakatopfuura.',
 },
 };
@@ -3143,6 +3371,9 @@ function schermAfspraak(pollId) {
 
   const statusBlok = el('div', 'status');
 
+  // Stap 1 "Wie ben jij?": bestaande namen + nieuwe naam, in één blok
+  const stapBlok = el('div', 'stapblok');
+  const stapKop = el('p', 'stapkop');
   const naamZone = el('div');
   const naamLabel = el('label', 'label');
   naamLabel.htmlFor = 'joinnaam';
@@ -3157,7 +3388,7 @@ function schermAfspraak(pollId) {
   naamZone.append(naamLabel, naamIn, naamKnopRij, naamFout);
 
   // "Je vult nu in voor Tom. · terug naar mezelf" (alleen als je namens iemand anders bezig bent)
-  const wieBar = el('p', 'wie verborgen');
+  const wieBar = el('div', 'wie verborgen');
   const wieTekst = el('span');
   const wieNaam = el('b'); // geïsoleerd via CSS (unicode-bidi), zie .wie b
   const wieNa = el('span');
@@ -3176,6 +3407,7 @@ function schermAfspraak(pollId) {
   const legenda = el('div', 'legenda');
   const tapLijn = el('p', 'taplijn');
   const lijstFout = el('p', 'fout verborgen');
+  const klikMelding = el('p', 'klikmelding'); klikMelding.setAttribute('role', 'status');
 
   // de hele afspraak verwijderen: jouw gegevens, jouw controle (met bevestiging)
   const alleZone = el('div', 'weg alles');
@@ -3217,8 +3449,9 @@ function schermAfspraak(pollId) {
   const lay = el('div', 'lay');
   const links = el('div', 'kolom-links');
   const rechts = el('div', 'kolom-rechts');
-  links.append(titelRij, deel, statusBlok, naamZone, chipsLabel, chips, nieuwRij, wieBar, weggehaaldLijn);
-  rechts.append(kalHint, kal, legenda, tapLijn, lijstFout);
+  stapBlok.append(stapKop, chipsLabel, chips, nieuwRij, naamZone);
+  links.append(titelRij, deel, statusBlok, stapBlok, weggehaaldLijn);
+  rechts.append(wieBar, kalHint, kal, legenda, klikMelding, tapLijn, lijstFout);
   lay.append(links, rechts);
   scherm.append(foutBalk, lay);
 
@@ -3343,10 +3576,23 @@ function schermAfspraak(pollId) {
   });
   naamIn.addEventListener('keydown', (e) => { if (e.key === 'Enter') verderBtn.click(); });
 
+  // naar stap 1 wijzen: blok in beeld, even laten oplichten
+  function wijsNaarStap1(focusEl) {
+    stapBlok.classList.remove('knipper');
+    void stapBlok.offsetWidth;   // animatie opnieuw starten
+    stapBlok.classList.add('knipper');
+    try { stapBlok.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch { stapBlok.scrollIntoView(); }
+    if (focusEl) focusEl.focus({ preventScroll: true });
+  }
   wieWissel.addEventListener('click', async () => {
-    zetActing(state.own);
-    state.lastJson = '';
-    await haalOp(true);
+    if (state.me && state.own && state.me !== state.own) {
+      zetActing(state.own);
+      state.lastJson = '';
+      await haalOp(true);
+      return;
+    }
+    // jezelf: iemand anders kiezen of toevoegen, bij de namen
+    wijsNaarStap1(chips.querySelector('.chip.toevoegen') || chips.querySelector('.chip'));
   });
   nieuwOk.addEventListener('click', async () => {
     if (!nieuwIn.value.trim()) { nieuwIn.focus(); return; }
@@ -3412,13 +3658,16 @@ function schermAfspraak(pollId) {
     return klikKeten;
   }
   async function klikDagNu(datum) {
-    if (!state.me) { naamIn.focus(); return; }
+    if (!state.me) { wijsNaarStap1(naamIn); return; }
     if (datum < isoDag(new Date())) return; // nooit in het verleden
     state.tapDag = datum;
     lijstFout.classList.add('verborgen');
     const d = state.data;
     const opt = d.options.find((o) => o.date === datum);
     const vorige = structuredClone(d);
+    const aan = !(opt && opt.votes.includes(state.me));
+    const wieNaamNu = (d.participants.find((p) => p.id === state.me) || {}).name || '';
+    klikMelding.textContent = '';
     state.inflight++;
     try {
       if (!opt) {
@@ -3454,6 +3703,7 @@ function schermAfspraak(pollId) {
         const r = await api('/polls/' + pollId + '/participants/' + state.me + '/votes', 'PUT', { optionIds: set });
         if (!r.ok) throw r;
       }
+      klikMelding.textContent = t(aan ? 'tick.added' : 'tick.removed', { date: fmtDatum(datum, null), name: wieNaamNu });
       state.lastJson = '';
     } catch (r) {
       state.data = vorige;
@@ -3735,6 +3985,7 @@ function schermAfspraak(pollId) {
     kal.textContent = '';
     kal.classList.toggle('inactief', !state.me);
     const d = state.data;
+    if (state.me) kal.style.setProperty('--ik', kleurVan(state.me)); else kal.style.removeProperty('--ik');
     const perDag = new Map(d.options.map((o) => [o.date, o]));
     const locale = datumLocale();
     const m0 = state.kalMaand;
@@ -3790,20 +4041,24 @@ function schermAfspraak(pollId) {
     }
     if (deelKnop.textContent !== t('share.copied')) zetDeelKnop(t('share.button'));
     naamZone.classList.toggle('verborgen', !!state.me);
-    naamLabel.textContent = t('make.name');
+    naamLabel.textContent = d.participants.length ? t('who.new') : t('make.name');
+    stapBlok.classList.toggle('open', !state.me);
+    stapKop.classList.toggle('verborgen', !!state.me);
+    stapKop.textContent = t('who.title');
     naamIn.placeholder = t('make.name.ph');
     verderBtn.textContent = t('poll.next');
 
     const ik = d.participants.find((p) => p.id === state.me);
-    // alleen tonen als je namens iemand anders bezig bent
+    // altijd zichtbaar zodra er iemand gekozen is: voor wie klik je nu?
     const namensAnder = !!(state.me && state.own && state.me !== state.own);
-    wieBar.classList.toggle('verborgen', !namensAnder);
-    const [voor, na] = t('members.actingFor').split('{name}');
+    wieBar.classList.toggle('verborgen', !ik);
+    const [voor, na] = t('acting.for').split('{name}');
     wieTekst.textContent = voor || '';
     wieNaam.textContent = ik ? ik.name : '';
     wieNaam.style.color = ik ? kleurTekstVan(ik.id) : '';
-    wieNa.textContent = na || '';
-    wieWissel.textContent = t('members.backToMe');
+    wieNa.textContent = (na || '') + (ik && ik.id === state.own ? ' (' + t('poll.you') + ')' : '');
+    wieWissel.textContent = namensAnder ? t('members.backToMe') : t('acting.switch');
+    if (ik) wieBar.style.setProperty('--ik', kleurVan(ik.id));
 
     // gekleurde naamchips: altijd zichtbaar zolang er deelnemers zijn.
     // Klik zonder eigen naam = "dat ben ik" (identiteit claimen);
@@ -3885,11 +4140,20 @@ function schermAfspraak(pollId) {
 
     // legenda onder de kalender
     legenda.textContent = '';
-    const lg1 = el('span'); lg1.append(el('span', 'vk', '✓'), el('span', null, t('legend.you')));
+    const lg1 = el('span'); lg1.append(el('span', 'vk', '✓'), el('span', null, ik && namensAnder ? t('legend.name', { name: ik.name }) : t('legend.you')));
     const lg2 = el('span'); lg2.append(el('span', 'dt'), el('span', null, t('legend.other')));
     legenda.append(lg1, lg2);
 
-    kalHint.textContent = state.me ? t('cal.hint') : t('poll.nameFirst');
+    // boven de kalender: voor wie, of eerst kiezen wie je bent (stap 2 nog op slot)
+    kalHint.textContent = '';
+    kalHint.classList.toggle('slot', !ik);
+    if (ik) {
+      const [v2, n2] = t('cal.hintFor').split('{name}');
+      const b = el('b', null, ik.name); b.style.color = kleurTekstVan(ik.id);
+      kalHint.append(document.createTextNode(v2 || ''), b, document.createTextNode(n2 || ''));
+    } else {
+      kalHint.textContent = t('cal.locked');
+    }
     alleBtn.textContent = t('poll.delete');
     alleJa.textContent = t('poll.deleteYes');
     alleNee.textContent = t('poll.leaveNo');
