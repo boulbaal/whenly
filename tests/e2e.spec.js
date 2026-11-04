@@ -8,11 +8,13 @@ const { execSync } = require('child_process');
 
 test.describe.configure({ mode: 'serial' });
 
-const D1 = '2026-10-09'; // vr
+// Vaste toekomstige vrijdagen: 9/16/23/30 okt zijn in 2037 weer vrijdagen, zodat de
+// verwachte teksten ("vr 9 okt") kloppen en de app ze niet als verleden weigert.
+const D1 = '2037-10-09'; // vr
 const T1 = '18:00';
-const D2 = '2026-10-16'; // vr
-const D3 = '2026-10-23'; // vr
-const MAAND = '2026-10';
+const D2 = '2037-10-16'; // vr
+const D3 = '2037-10-23'; // vr
+const MAAND = '2037-10';
 
 function ctxOpties(testInfo, extra) {
   const use = testInfo.project.use || {};
@@ -43,7 +45,7 @@ async function apiMaakPollMetTwee(request, body) {
 
 // Bladert de kalender naar de gevraagde maand ('YYYY-MM').
 async function toonMaand(page, doel) {
-  for (let i = 0; i < 24; i++) {
+  for (let i = 0; i < 200; i++) {
     const m = await page.locator('#kalmaand').getAttribute('data-maand');
     if (m === doel) return;
     await page.locator('.kalkop button').nth(m < doel ? 1 : 0).click();
@@ -174,7 +176,7 @@ test.describe('API', () => {
 
     // A14: participant weghalen -> votes weg (cascade), toegevoegde dagen blijven
     res = await request.post(`/api/polls/${id}/options`, {
-      data: { participantId: sofie.participantId, date: '2026-10-30', time: null },
+      data: { participantId: sofie.participantId, date: '2037-10-30', time: null },
     });
     expect(res.status()).toBe(201);
     const { optionId: blijft } = await res.json();
@@ -461,16 +463,16 @@ test.describe("Scenario's", () => {
     await expect(dag(sofie, D1).locator('.ddot')).toHaveCount(1);  // stipje van Ali
     // 9 okt springt eruit, iedereen (2 van 2) kan -> GROEN
     await expect(sofie.locator('.status .balk')).toHaveClass(/groen/);
-    await expect(sofie.locator('.status .groot')).toHaveText(/Iedereen kan op vr 9 okt/);
+    await expect(sofie.locator('.status .groot')).toHaveText(/Iedereen kan op vr 9 okt 2037/);
     await expect(sofie.locator('.status .sub')).toHaveText('2 van 2 kunnen');
     await expect(sofie.locator('.status .namenlijn')).toContainText('jij');
     await expect(sofie.locator('.status .namenlijn')).toContainText('Ali');
     await sofie.locator('.status input[type="time"]').fill(T1);
-    await expect(sofie.locator('.status .groot')).toHaveText(/Iedereen kan op vr 9 okt om 18:00/);
+    await expect(sofie.locator('.status .groot')).toHaveText(/Iedereen kan op vr 9 okt 2037 om 18:00/);
 
     /* ---------- S3: live bij Ali, zonder herladen ---------- */
     await expect(dag(ali, D1).locator('.ddot')).toHaveCount(1, { timeout: 13_000 }); // stipje van Sofie
-    await expect(ali.locator('.status .groot')).toHaveText(/Iedereen kan op vr 9 okt om 18:00/);
+    await expect(ali.locator('.status .groot')).toHaveText(/Iedereen kan op vr 9 okt 2037 om 18:00/);
     await expect(ali.locator('.status .namenlijn')).toContainText('Sofie');
 
     if (testInfo.project.name === 'desktop') {
@@ -517,12 +519,12 @@ test.describe("Scenario's", () => {
     /* ---------- S7: vastleggen en weer loslaten ---------- */
     // stand: 9 okt = Ali+Sofie (2), 16 okt = Ali (1), 3 deelnemers -> nog niet iedereen -> ORANJE
     await expect(ali.locator('.status .balk')).toHaveClass(/oranje/, { timeout: 13_000 });
-    await expect(ali.locator('.status .groot')).toHaveText(/Beste dag tot nu: vr 9 okt om 18:00/);
+    await expect(ali.locator('.status .groot')).toHaveText(/Beste dag tot nu: vr 9 okt 2037 om 18:00/);
     await expect(ali.locator('.status .sub')).toHaveText('2 van 3 kunnen');
     await ali.locator('.status button', { hasText: 'Vastleggen' }).click();
     // vastgelegd -> GROEN
     await expect(ali.locator('.status .balk')).toHaveClass(/groen/);
-    await expect(ali.locator('.status .groot')).toHaveText(/Afgesproken: vr 9 okt om 18:00/);
+    await expect(ali.locator('.status .groot')).toHaveText(/Afgesproken: vr 9 okt 2037 om 18:00/);
     await expect(dag(ali, D1)).toHaveClass(/definitief/);
     await expect(sofie.locator('.status .groot')).toHaveText(/Afgesproken/, { timeout: 13_000 });
     await sofie.locator('.status button', { hasText: 'Toch niet' }).click();
@@ -633,13 +635,13 @@ test.describe("Scenario's", () => {
     const o9 = (await (await request.get('/api/polls/' + id)).json()).options.find((x) => x.date === D1).id;
     await request.put(`/api/polls/${id}/participants/${r.participantId}/votes`, { data: { optionIds: [o9] } });
     await expect(page.locator('.status .balk')).toHaveClass(/oranje/, { timeout: 13_000 });
-    await expect(page.locator('.status .groot')).toHaveText(/Beste dag tot nu: vr 9 okt/);
+    await expect(page.locator('.status .groot')).toHaveText(/Beste dag tot nu: vr 9 okt 2037/);
     await expect(page.locator('.status .sub')).toHaveText('2 van 3 kunnen');
 
     // Ilyas ook -> 3 van 3 -> GROEN
     await request.put(`/api/polls/${id}/participants/${i.participantId}/votes`, { data: { optionIds: [o9] } });
     await expect(page.locator('.status .balk')).toHaveClass(/groen/, { timeout: 13_000 });
-    await expect(page.locator('.status .groot')).toHaveText(/Iedereen kan op vr 9 okt/);
+    await expect(page.locator('.status .groot')).toHaveText(/Iedereen kan op vr 9 okt 2037/);
     await expect(page.locator('.status .sub')).toHaveText('3 van 3 kunnen');
     await ctx.close();
   });
@@ -687,7 +689,18 @@ test.describe("Scenario's", () => {
     await ctx.close();
   });
 
-  test('S15 donatieknop toont bedragen en PayPal-links', async ({ browser }, testInfo) => {
+  test('S15b donatieknop staat tijdelijk uit (DONEREN = false)', async ({ browser }, testInfo) => {
+    const ctx = await browser.newContext(ctxOpties(testInfo));
+    const page = await ctx.newPage();
+    await page.goto('/');
+    await expect(page.locator('#doneer')).toBeHidden();
+    await expect(page.locator('#doneerBtn')).toBeHidden();
+    await expect(page.locator('a[href*="paypal"]')).toHaveCount(0);
+    await ctx.close();
+  });
+
+  // Weer aan zodra DONEREN = true in public/index.html
+  test.skip('S15 donatieknop toont bedragen en PayPal-links', async ({ browser }, testInfo) => {
     const ctx = await browser.newContext(ctxOpties(testInfo));
     const page = await ctx.newPage();
     await page.goto('/');
@@ -727,11 +740,11 @@ test.describe("Scenario's", () => {
     const ctx = await browser.newContext(ctxOpties(testInfo));
     const page = await ctx.newPage();
     await page.goto('/p/' + id);
-    await expect(page.locator('.status .groot')).toHaveText(/vr 9 okt om 18:00/);
+    await expect(page.locator('.status .groot')).toHaveText(/vr 9 okt 2037 om 18:00/);
     await page.locator('#vlag').click();
     await page.locator('#talen button', { hasText: 'English' }).click();
     await expect(page.locator('#kalhint')).toHaveText('Enter your name first to start ticking.');
-    await expect(page.locator('.status .groot')).toHaveText(/Fri,? 9 Oct at 18:00/);
+    await expect(page.locator('.status .groot')).toHaveText(/Fri,? 9 Oct,? 2037 at 18:00/);
     await page.reload();
     await expect(page.locator('#kalhint')).toHaveText('Enter your name first to start ticking.');
     await page.locator('#vlag').click();
@@ -739,7 +752,7 @@ test.describe("Scenario's", () => {
     await expect(page.locator('.status .groot')).toHaveText(/ven\.?.*9 oct\.?.*à 18:00/);
     await page.locator('#vlag').click();
     await page.locator('#talen button', { hasText: 'Nederlands' }).click();
-    await expect(page.locator('.status .groot')).toHaveText(/vr 9 okt om 18:00/);
+    await expect(page.locator('.status .groot')).toHaveText(/vr 9 okt 2037 om 18:00/);
     await ctx.close();
   });
 
@@ -794,11 +807,11 @@ test.describe("Scenario's", () => {
     const ctx = await browser.newContext(ctxOpties(testInfo, { locale: 'en-US' }));
     const page = await ctx.newPage();
     await page.goto('/p/' + id);
-    await expect(page.locator('.status .groot')).toHaveText(/Fri, Oct 9 at 6:00 PM/);
+    await expect(page.locator('.status .groot')).toHaveText(/Fri, Oct 9, 2037 at 6:00 PM/);
     const kop = await page.locator('.maandblok').first().locator('.kalwd').allTextContents();
     expect(kop[0]).toBe('Sun');
     expect(kop[6]).toBe('Sat');
-    // 1 oktober 2026 is een donderdag: bij zondagstart 4 lege cellen ervoor
+    // 1 oktober 2037 is een donderdag: bij zondagstart 4 lege cellen ervoor
     await toonMaand(page, MAAND);
     const leeg = await page.locator('.maandblok').first().locator('.dag.leeg').count();
     expect(leeg).toBe(4);
@@ -860,7 +873,8 @@ test.describe("Scenario's", () => {
     await expect(page.locator('.melding.fout')).toBeVisible();
     await expect(page.locator('.melding.fout')).toContainText('De server antwoordt even niet.');
     await page.unroute('**/api/polls/' + id);
-    await page.locator('.melding.fout button').click();
+    // De app probeert zelf ook opnieuw; is de melding al weg, dan hoeft de klik niet meer.
+    await page.locator('.melding.fout button').click({ timeout: 3000 }).catch(() => {});
     await expect(page.locator('.melding.fout')).toBeHidden();
     await expect(page.locator('h1')).toHaveText('Etentje');
     await ctx.close();
@@ -896,7 +910,7 @@ test.describe("Scenario's", () => {
   });
 
   test('S23 kalender opent op de eerste komende dag, of op de definitieve dag', async ({ browser, request }, testInfo) => {
-    // opties in oktober 2026 (in de toekomst): de kalender opent daar, niet op de huidige maand
+    // opties in oktober 2037 (in de toekomst): de kalender opent daar, niet op de huidige maand
     const { id } = await apiMaakPoll(request, { title: 'Later', name: 'Ali', options: [{ date: D2, time: null }, { date: D1, time: null }] });
     const ctx = await browser.newContext(ctxOpties(testInfo));
     const page = await ctx.newPage();
@@ -923,9 +937,9 @@ test.describe("Scenario's", () => {
     const page = await ctx.newPage();
     await page.goto('/p/' + id);
     await toonMaand(page, MAAND);
-    await expect(dag(page, D1)).toHaveAttribute('aria-label', 'vrijdag 9 oktober 2026: jij');
+    await expect(dag(page, D1)).toHaveAttribute('aria-label', 'vrijdag 9 oktober 2037: jij');
     await expect(dag(page, D1)).toHaveAttribute('aria-pressed', 'true');
-    await expect(dag(page, D2)).toHaveAttribute('aria-label', /vrijdag 16 oktober 2026: nog niemand/);
+    await expect(dag(page, D2)).toHaveAttribute('aria-label', /vrijdag 16 oktober 2037: nog niemand/);
     await expect(dag(page, D2)).toHaveAttribute('aria-pressed', 'false');
     await expect(page.locator('.chip', { hasText: 'Ali' })).toHaveAttribute('aria-pressed', 'true');
     await expect(page.locator('.chip', { hasText: 'Sofie' })).toHaveAttribute('aria-pressed', 'false');
@@ -953,9 +967,9 @@ test.describe("Scenario's", () => {
   test('S25 Tamazight, Koerdisch en Shona: eigen datumnamen als de browser de taal niet kent', async ({ browser, request }, testInfo) => {
     const { id } = await apiMaakPollMetTwee(request, { title: 'Imnsi', name: 'Kushim', options: [{ date: D1, time: T1 }] });
     const gevallen = [
-      ['zgh', 'ⵎⴰⵏⴰⴳ ⴰⴷ ⵏⵎⵢⴰⴳⴰⵔ?', /ⴰⵙⵉⵎ 9 ⴽⵜⵓ ⴳ 18:00/, 'ⴰⵢⵏ', 'ⴽⵜⵓⴱⵔ 2026'],
-      ['ku', 'Kengî em hev bibînin?', /9 cot, înî saet 18:00/, 'dşm', 'cotmeh 2026'],
-      ['sn', 'Tosangana rinhi?', /Gum 9, Chs na 18:00/, 'Svo', 'Gumiguru 2026'],
+      ['zgh', 'ⵎⴰⵏⴰⴳ ⴰⴷ ⵏⵎⵢⴰⴳⴰⵔ?', /ⴰⵙⵉⵎ 9 ⴽⵜⵓ 2037 ⴳ 18:00/, 'ⴰⵢⵏ', 'ⴽⵜⵓⴱⵔ 2037'],
+      ['ku', 'Kengî em hev bibînin?', /9 cot, înî 2037 saet 18:00/, 'dşm', 'cotmeh 2037'],
+      ['sn', 'Tosangana rinhi?', /Gum 9, Chs 2037 na 18:00/, 'Svo', 'Gumiguru 2037'],
     ];
     for (const [taal, titel, datum, eersteWd, maand] of gevallen) {
       const ctx = await browser.newContext(ctxOpties(testInfo)); // nl-BE-browser: mag niet doorsijpelen
