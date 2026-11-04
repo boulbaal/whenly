@@ -869,17 +869,17 @@ test.describe("Scenario's", () => {
     expect(await page.evaluate(() => document.documentElement.dir)).toBe('rtl');
     expect(await page.evaluate(() => document.documentElement.lang)).toBe('ar');
     await expect(page.locator('#kalhint')).toHaveText('اختر أولاً من أنت');
-    // Egypte: de week begint op zaterdag; korte weekdag = één letter
+    // ook in Egypte begint de week op maandag; korte weekdag = één letter
     const kop = await page.locator('.maandblok').first().locator('.kalwd').allTextContents();
     expect(kop.length).toBe(7);
-    expect(kop[0]).toBe('س'); // zaterdag
+    expect(kop[0]).toBe('ن'); // maandag (الاثنين)
     expect(kop.every((w) => w.length <= 2)).toBe(true);
     // Latijnse cijfers in de datum (raster en tijd zijn dat ook)
     await expect(page.locator('.status .groot')).toContainText('9');
     await ctx.close();
   });
 
-  test('S18 en-US: week begint op zondag, 12-uursklok, maand-dag volgorde', async ({ browser, request }, testInfo) => {
+  test('S18 en-US: week begint toch op maandag, 12-uursklok, maand-dag volgorde', async ({ browser, request }, testInfo) => {
     const { id } = await apiMaakPollMetTwee(request, {
       title: 'Dinner', name: 'Ali', options: [{ date: D1, time: T1 }],
     });
@@ -888,12 +888,12 @@ test.describe("Scenario's", () => {
     await page.goto('/p/' + id);
     await expect(page.locator('.status .groot')).toHaveText(/Fri, Oct 9, 2037 at 6:00 PM/);
     const kop = await page.locator('.maandblok').first().locator('.kalwd').allTextContents();
-    expect(kop[0]).toBe('Sun');
-    expect(kop[6]).toBe('Sat');
-    // 1 oktober 2037 is een donderdag: bij zondagstart 4 lege cellen ervoor
+    expect(kop[0]).toBe('Mon');
+    expect(kop[6]).toBe('Sun');
+    // 1 oktober 2037 is een donderdag: bij maandagstart 3 lege cellen ervoor
     await toonMaand(page, MAAND);
     const leeg = await page.locator('.maandblok').first().locator('.dag.leeg').count();
-    expect(leeg).toBe(4);
+    expect(leeg).toBe(3);
     await ctx.close();
   });
 
@@ -1048,7 +1048,7 @@ test.describe("Scenario's", () => {
     const gevallen = [
       ['zgh', 'ⵎⴰⵏⴰⴳ ⴰⴷ ⵏⵎⵢⴰⴳⴰⵔ?', /ⴰⵙⵉⵎ 9 ⴽⵜⵓ 2037 ⴳ 18:00/, 'ⴰⵢⵏ', 'ⴽⵜⵓⴱⵔ 2037'],
       ['ku', 'Kengî em hev bibînin?', /9 cot, înî 2037 saet 18:00/, 'dşm', 'cotmeh 2037'],
-      ['sn', 'Tosangana rinhi?', /Gum 9, Chs 2037 na 18:00/, 'Svo', 'Gumiguru 2037'],
+      ['sn', 'Tosangana rinhi?', /Gum 9, Chs 2037 na 18:00/, 'Muv', 'Gumiguru 2037'],
     ];
     for (const [taal, titel, datum, eersteWd, maand] of gevallen) {
       const ctx = await browser.newContext(ctxOpties(testInfo)); // nl-BE-browser: mag niet doorsijpelen

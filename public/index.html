@@ -2898,20 +2898,10 @@ function dtf(opties) {
   return { format, formatRange };
 }
 
-// Eerste dag van de week: 1 = maandag ... 7 = zondag. Via Intl als de browser
-// dat kent, anders een tabel per regio (CLDR).
-const WEEK_ZONDAG = new Set('AG AS BD BR BS BT BW BZ CA CO DM DO ET GT GU HK HN ID IL IN JM JP KE KH KR LA MH MM MO MT MX MZ NI NP PA PE PH PK PR PY SA SG SV TH TT TW UM US VE VI WS YE ZA ZW'.split(' '));
-const WEEK_ZATERDAG = new Set('AE AF BH DJ DZ EG IQ IR JO KW LY OM QA SD SY'.split(' '));
+// Eerste dag van de week: altijd maandag, in elke taal en regio (keuze van Ali,
+// nov 2026; voorheen volgde dit de regio: zondag in de VS, zaterdag in Egypte).
+// 1 = maandag ... 7 = zondag.
 function eersteWeekdag() {
-  let regio = '';
-  try {
-    const loc = new Intl.Locale(state.locale);
-    const wi = typeof loc.getWeekInfo === 'function' ? loc.getWeekInfo() : loc.weekInfo;
-    if (wi && wi.firstDay >= 1 && wi.firstDay <= 7) return wi.firstDay;
-    regio = (loc.maximize().region || '').toUpperCase();
-  } catch {}
-  if (WEEK_ZONDAG.has(regio)) return 7;
-  if (WEEK_ZATERDAG.has(regio)) return 6;
   return 1;
 }
 
